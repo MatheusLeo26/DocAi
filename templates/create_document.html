@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DocAI - Criar Documento</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <style>
+        .create-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        .sidebar {
+            width: 250px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            border-right: 1px solid var(--glass-border);
+            padding: 2rem 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar .logo { margin-bottom: 3rem; text-align: center; }
+        .nav-item {
+            padding: 1rem;
+            color: #cbd5e1;
+            text-decoration: none;
+            border-radius: 12px;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s;
+            cursor: pointer;
+            display: block;
+        }
+        .nav-item:hover, .nav-item.active { background: rgba(255, 255, 255, 0.1); color: white; }
+        .main-content {
+            flex: 1;
+            padding: 3rem;
+            overflow-y: auto;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        .header h2 { font-size: 2rem; font-weight: 600; }
+        .back-btn {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+        .back-btn:hover { color: white; }
+
+        .form-section {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2.5rem;
+            max-width: 700px;
+            animation: fadeInUp 0.6s ease forwards;
+        }
+        .form-section h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            color: #e2e8f0;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: #94a3b8;
+            font-weight: 400;
+        }
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            background: rgba(0, 0, 0, 0.25);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            resize: vertical;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+        .form-group textarea {
+            min-height: 150px;
+        }
+        .form-group .hint {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-top: 0.4rem;
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 16px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(59, 130, 246, 0.4);
+        }
+        .generate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .loading-overlay.show { display: flex; }
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255,255,255,0.1);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 1.5rem;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-text {
+            font-size: 1.1rem;
+            color: #e2e8f0;
+            text-align: center;
+        }
+        .loading-sub {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-top: 0.5rem;
+        }
+
+        .success-msg {
+            display: none;
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            margin-top: 1.5rem;
+            animation: fadeInUp 0.5s ease forwards;
+        }
+        .success-msg h3 { color: #22c55e; margin-bottom: 0.5rem; }
+        .success-msg p { color: #94a3b8; }
+        .success-msg a {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.7rem 2rem;
+            background: rgba(34, 197, 94, 0.2);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 12px;
+            color: #22c55e;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .success-msg a:hover { background: rgba(34, 197, 94, 0.3); }
+
+        @media (max-width: 768px) {
+            .create-container { flex-direction: column; }
+            .sidebar {
+                width: 100%;
+                flex-direction: row;
+                padding: 1rem;
+                overflow-x: auto;
+                gap: 0.5rem;
+            }
+            .sidebar .logo { margin-bottom: 0; margin-right: 1rem; }
+            .nav-item { white-space: nowrap; padding: 0.7rem 1rem; }
+            .main-content { padding: 1.5rem; }
+            .form-section { padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-elements">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <div class="loading-text">A IA está gerando seu documento...</div>
+        <div class="loading-sub">Isso pode levar alguns segundos</div>
+    </div>
+    
+    <div class="create-container">
+        <aside class="sidebar">
+            <div class="logo">DocAI<span class="dot">.</span></div>
+            <a href="/dashboard" class="nav-item">Biblioteca</a>
+            <a href="/create/resume" class="nav-item" id="nav-resume">Criar Currículo</a>
+            <a href="/create/contract" class="nav-item" id="nav-contract">Criar Contrato</a>
+            <a href="/create/report" class="nav-item" id="nav-report">Criar Relatório</a>
+            <a href="/converter" class="nav-item">Conversor de Arquivos</a>
+            <div style="margin-top: auto;">
+                <a href="#" class="nav-item" id="logoutBtn" style="color: #ef4444;">Sair</a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="header">
+                <h2 id="pageTitle">Criar Documento</h2>
+                <div style="display: flex; gap: 1rem; align-items: center;">
+                    <a href="/dashboard" class="back-btn">← Voltar ao Dashboard</a>
+                    <button id="themeToggle" class="btn-secondary">Modo Escuro</button>
+                </div>
+            </div>
+
+            <!-- RESUME FORM -->
+            <div class="form-section" id="form-resume" style="display: none;">
+                <h3>📄 Informações do Currículo</h3>
+                <form id="resumeForm">
+                    <div class="form-group">
+                        <label>Título do documento</label>
+                        <input type="text" id="resume-title" placeholder="Ex: Currículo - Desenvolvedor Full Stack" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Nome completo</label>
+                        <input type="text" id="resume-name" placeholder="Seu nome completo" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Telefone / Email / LinkedIn / Cidade</label>
+                        <input type="text" id="resume-contact" placeholder="(11) 99999-9999 | email@email.com | linkedin.com/in/seu-perfil | São Paulo - SP">
+                    </div>
+                    <div class="form-group">
+                        <label>Objetivo / Cargo desejado</label>
+                        <input type="text" id="resume-objective" placeholder="Ex: Desenvolvedor Full Stack Pleno">
+                    </div>
+                    <div class="form-group">
+                        <label>Experiência profissional</label>
+                        <textarea id="resume-experience" placeholder="Liste suas experiências. Ex:&#10;- Empresa X (2020-2023): Desenvolvedor Python, criei APIs REST, lidei com banco de dados PostgreSQL&#10;- Empresa Y (2018-2020): Estagiário de TI, suporte técnico e manutenção de sistemas"></textarea>
+                        <div class="hint">Descreva cada experiência com empresa, período e o que você fez. A IA vai formatar tudo profissionalmente.</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Formação acadêmica</label>
+                        <textarea id="resume-education" placeholder="Ex: Ciência da Computação - Universidade Federal (2016-2020)&#10;Técnico em Informática - ETEC (2013-2015)"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Habilidades e competências</label>
+                        <textarea id="resume-skills" placeholder="Ex: Python, JavaScript, Flask, PostgreSQL, Git, Docker, inglês intermediário, trabalho em equipe, liderança"></textarea>
+                    </div>
+                    <button type="submit" class="generate-btn">🤖 Gerar Currículo com IA</button>
+                </form>
+            </div>
+
+            <!-- CONTRACT FORM -->
+            <div class="form-section" id="form-contract" style="display: none;">
+                <h3>📋 Informações do Contrato</h3>
+                <form id="contractForm">
+                    <div class="form-group">
+                        <label>Título do documento</label>
+                        <input type="text" id="contract-title" placeholder="Ex: Contrato de Prestação de Serviços" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo de contrato</label>
+                        <input type="text" id="contract-type" placeholder="Ex: Prestação de Serviços, Compra e Venda, Aluguel, Trabalho CLT, Freelancer">
+                    </div>
+                    <div class="form-group">
+                        <label>Dados da Parte Contratante</label>
+                        <textarea id="contract-party1" placeholder="Nome/Razão Social, CPF/CNPJ, endereço completo"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Dados da Parte Contratada</label>
+                        <textarea id="contract-party2" placeholder="Nome/Razão Social, CPF/CNPJ, endereço completo"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Objeto e condições do contrato</label>
+                        <textarea id="contract-object" placeholder="Descreva o que será contratado, prazos, valores, formas de pagamento e quaisquer condições especiais."></textarea>
+                        <div class="hint">Quanto mais detalhes, melhor a IA consegue gerar um contrato completo e preciso.</div>
+                    </div>
+                    <button type="submit" class="generate-btn">🤖 Gerar Contrato com IA</button>
+                </form>
+            </div>
+
+            <!-- REPORT FORM -->
+            <div class="form-section" id="form-report" style="display: none;">
+                <h3>📊 Informações do Relatório</h3>
+                <form id="reportForm">
+                    <div class="form-group">
+                        <label>Título do relatório</label>
+                        <input type="text" id="report-title" placeholder="Ex: Relatório Mensal de Vendas - Junho 2026" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Empresa / Departamento</label>
+                        <input type="text" id="report-company" placeholder="Ex: Empresa XYZ - Departamento Comercial">
+                    </div>
+                    <div class="form-group">
+                        <label>Período do relatório</label>
+                        <input type="text" id="report-period" placeholder="Ex: 01/06/2026 a 30/06/2026">
+                    </div>
+                    <div class="form-group">
+                        <label>Dados e informações do relatório</label>
+                        <textarea id="report-data" placeholder="Insira todos os dados, números, métricas, observações e conclusões que devem constar no relatório. A IA vai organizar tudo de forma profissional com tabelas e gráficos descritivos."></textarea>
+                        <div class="hint">Inclua dados brutos, números e observações. A IA vai organizar e formatar profissionalmente.</div>
+                    </div>
+                    <button type="submit" class="generate-btn">🤖 Gerar Relatório com IA</button>
+                </form>
+            </div>
+
+            <div class="success-msg" id="successMsg">
+                <h3>✅ Documento gerado com sucesso!</h3>
+                <p>Seu documento foi criado pela IA e está pronto para download.</p>
+                <a href="/dashboard">Ver na Biblioteca</a>
+                <a href="#" id="downloadLink" style="margin-left: 0.5rem; background: rgba(59, 130, 246, 0.2); border-color: rgba(59, 130, 246, 0.3); color: #3b82f6;">⬇ Baixar PDF</a>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const DOC_TYPE = "{{ doc_type }}";
+        const TITLES = { resume: 'Criar Currículo', contract: 'Criar Contrato', report: 'Criar Relatório' };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('token');
+            if (!token) { window.location.href = '/login'; return; }
+
+            // Highlight active nav
+            const navEl = document.getElementById('nav-' + DOC_TYPE);
+            if (navEl) navEl.classList.add('active');
+
+            // Show correct form and title
+            document.getElementById('pageTitle').textContent = TITLES[DOC_TYPE] || 'Criar Documento';
+            const formEl = document.getElementById('form-' + DOC_TYPE);
+            if (formEl) formEl.style.display = 'block';
+
+            // Logout
+            document.getElementById('logoutBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                localStorage.removeItem('token');
+                window.location.href = '/login';
+            });
+        });
+
+        function collectData() {
+            if (DOC_TYPE === 'resume') {
+                return {
+                    title: document.getElementById('resume-title').value,
+                    data: `Nome: ${document.getElementById('resume-name').value}\nContato: ${document.getElementById('resume-contact').value}\nObjetivo: ${document.getElementById('resume-objective').value}\nExperiência: ${document.getElementById('resume-experience').value}\nFormação: ${document.getElementById('resume-education').value}\nHabilidades: ${document.getElementById('resume-skills').value}`
+                };
+            } else if (DOC_TYPE === 'contract') {
+                return {
+                    title: document.getElementById('contract-title').value,
+                    data: `Tipo de contrato: ${document.getElementById('contract-type').value}\nContratante: ${document.getElementById('contract-party1').value}\nContratado: ${document.getElementById('contract-party2').value}\nObjeto e condições: ${document.getElementById('contract-object').value}`
+                };
+            } else if (DOC_TYPE === 'report') {
+                return {
+                    title: document.getElementById('report-title').value,
+                    data: `Empresa: ${document.getElementById('report-company').value}\nPeríodo: ${document.getElementById('report-period').value}\nDados: ${document.getElementById('report-data').value}`
+                };
+            }
+        }
+
+        async function submitDocument(e) {
+            e.preventDefault();
+            const token = localStorage.getItem('token');
+            const { title, data } = collectData();
+
+            document.getElementById('loadingOverlay').classList.add('show');
+
+            try {
+                const res = await fetch('/api/docs/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ type: DOC_TYPE, data, title })
+                });
+
+                const result = await res.json();
+                document.getElementById('loadingOverlay').classList.remove('show');
+
+                if (res.ok) {
+                    document.getElementById('form-' + DOC_TYPE).style.display = 'none';
+                    document.getElementById('successMsg').style.display = 'block';
+                    document.getElementById('downloadLink').href = `/api/docs/download/${result.document.id}`;
+                    document.getElementById('downloadLink').onclick = (ev) => {
+                        ev.preventDefault();
+                        fetch(`/api/docs/download/${result.document.id}`, {
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        }).then(r => r.blob()).then(blob => {
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url; a.download = title + '.pdf'; a.click();
+                        });
+                    };
+                } else {
+                    alert(result.message || 'Erro ao gerar documento');
+                }
+            } catch (err) {
+                document.getElementById('loadingOverlay').classList.remove('show');
+                alert('Erro de conexão: ' + err.message);
+            }
+        }
+
+        document.getElementById('resumeForm')?.addEventListener('submit', submitDocument);
+        document.getElementById('contractForm')?.addEventListener('submit', submitDocument);
+        document.getElementById('reportForm')?.addEventListener('submit', submitDocument);
+    </script>
+</body>
+</html>

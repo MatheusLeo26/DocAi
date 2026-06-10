@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DocAI - Gerador de Documentos com IA</title>
+    <meta name="description" content="Gere currículos, contratos e relatórios profissionais em segundos com inteligência artificial. Converta arquivos com facilidade.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <style>
+        /* Features Section */
+        .features {
+            padding: 5rem 5%;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .feature-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            transition: all 0.4s;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.8s ease forwards;
+        }
+        .feature-card:nth-child(2) { animation-delay: 0.15s; }
+        .feature-card:nth-child(3) { animation-delay: 0.3s; }
+        .feature-card:nth-child(4) { animation-delay: 0.45s; }
+        .feature-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 40px rgba(59, 130, 246, 0.15);
+        }
+        .feature-icon { font-size: 3rem; margin-bottom: 1.2rem; }
+        .feature-card h3 { font-size: 1.2rem; margin-bottom: 0.8rem; }
+        .feature-card p { color: #94a3b8; font-size: 0.95rem; line-height: 1.6; }
+
+        /* How it works */
+        .how-it-works {
+            padding: 5rem 5%;
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .how-it-works h2 {
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+        }
+        .steps {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: left;
+            transition: all 0.3s;
+        }
+        .step:hover { border-color: var(--primary); }
+        .step-number {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            min-width: 50px;
+        }
+        .step h3 { margin-bottom: 0.3rem; }
+        .step p { color: #94a3b8; font-size: 0.9rem; }
+
+        /* Footer */
+        .footer {
+            padding: 3rem 5%;
+            text-align: center;
+            color: #475569;
+            font-size: 0.85rem;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .hero p { font-size: 1rem; }
+            .glass-panel { padding: 2.5rem 1.5rem; }
+            .hero-actions { flex-direction: column; }
+            .step { flex-direction: column; text-align: center; gap: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-elements">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+    
+    <nav class="glass-nav">
+        <div class="logo">DocAI<span class="dot">.</span></div>
+        <div class="nav-links" style="display: flex; align-items: center; gap: 1rem;">
+            <a href="#features" style="margin-left: 0;">Recursos</a>
+            <a href="#how" style="margin-left: 0;">Como Funciona</a>
+            <a href="/login" class="btn-login" style="margin-left: 0;">Entrar</a>
+            <button id="themeToggle" class="btn-secondary" style="padding: 0.5rem 1.2rem; border-radius: 20px;">Modo Escuro</button>
+        </div>
+    </nav>
+
+    <main>
+        <section class="hero">
+            <div class="hero-content glass-panel">
+                <h1>Crie documentos perfeitos com <span class="gradient-text">Inteligência Artificial</span></h1>
+                <p>Gere currículos, contratos e relatórios profissionais em segundos. Converta arquivos com facilidade.</p>
+                <div class="hero-actions">
+                    <button class="btn-primary" onclick="window.location.href='/register'">Começar Agora</button>
+                    <button class="btn-secondary" onclick="window.location.href='#features'">Explorar Recursos</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="features" id="features">
+            <div class="feature-card">
+                <div class="feature-icon">📄</div>
+                <h3>Currículos Profissionais</h3>
+                <p>Insira suas informações e a IA gera um currículo formatado nos padrões do mercado.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📋</div>
+                <h3>Contratos Completos</h3>
+                <p>Gere contratos com cláusulas profissionais e linguagem jurídica adequada.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Relatórios Corporativos</h3>
+                <p>Transforme dados brutos em relatórios organizados com tabelas e métricas.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔄</div>
+                <h3>Conversor de Arquivos</h3>
+                <p>Converta entre formatos: DOCX ↔ PDF, PNG ↔ JPG, JFIF ↔ PNG e muito mais.</p>
+            </div>
+        </section>
+
+        <section class="how-it-works" id="how">
+            <h2>Como <span class="gradient-text">Funciona</span></h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">01</div>
+                    <div>
+                        <h3>Escolha o tipo de documento</h3>
+                        <p>Selecione entre currículo, contrato ou relatório na tela inicial.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">02</div>
+                    <div>
+                        <h3>Insira suas informações</h3>
+                        <p>Preencha os campos com seus dados brutos — não se preocupe com formatação.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">03</div>
+                    <div>
+                        <h3>A IA faz o trabalho pesado</h3>
+                        <p>O robô organiza tudo profissionalmente, com a linguagem certa para o mercado.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">04</div>
+                    <div>
+                        <h3>Baixe seu PDF pronto</h3>
+                        <p>Receba o documento em PDF com design premium, pronto para usar.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>© 2026 DocAI. Documentos profissionais gerados com Inteligência Artificial.</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

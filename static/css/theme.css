@@ -1,0 +1,133 @@
+/* theme.css - defines light and dark theme variables and imports main styles */
+@import url('style.css');
+
+:root {
+  --bg-color: #f8fafc;
+  --text-color: #0f172a;
+  --text-muted: #475569;
+  --glass-bg: rgba(255, 255, 255, 0.65);
+  --glass-border: rgba(148, 163, 184, 0.2);
+  --primary: #2563eb;
+  --secondary: #4f46e5;
+  --card-text: #0f172a;
+  --nav-text: #475569;
+  --nav-active-bg: rgba(37, 99, 235, 0.1);
+  --nav-active-color: #2563eb;
+  --btn-sec-bg: rgba(0, 0, 0, 0.05);
+  --btn-sec-text: #0f172a;
+  --title-color: #0f172a;
+  --border-style: 1px solid var(--glass-border);
+}
+
+[data-theme="dark"] {
+  --bg-color: #0f172a;
+  --text-color: #f8fafc;
+  --text-muted: #94a3b8;
+  --glass-bg: rgba(15, 23, 42, 0.45);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --primary: #60a5fa;
+  --secondary: #a5b4fc;
+  --card-text: #ffffff;
+  --nav-text: #cbd5e1;
+  --nav-active-bg: rgba(255, 255, 255, 0.08);
+  --nav-active-color: #ffffff;
+  --btn-sec-bg: rgba(255, 255, 255, 0.05);
+  --btn-sec-text: #ffffff;
+  --title-color: #e2e8f0;
+}
+
+body {
+  background: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Theme utility classes to apply throughout application */
+.sidebar {
+  background: var(--glass-bg) !important;
+  border-right: var(--border-style) !important;
+}
+
+.nav-item {
+  color: var(--nav-text) !important;
+}
+
+.nav-item:hover {
+  background: var(--nav-active-bg) !important;
+  color: var(--nav-active-color) !important;
+}
+
+.nav-item.active {
+  background: var(--nav-active-bg) !important;
+  color: var(--nav-active-color) !important;
+  font-weight: 600;
+}
+
+.action-card {
+  background: var(--glass-bg) !important;
+  border: var(--border-style) !important;
+  color: var(--card-text) !important;
+}
+
+.action-card p {
+  color: var(--text-muted) !important;
+}
+
+.section-title {
+  color: var(--title-color) !important;
+}
+
+.doc-item {
+  background: var(--glass-bg) !important;
+  border: var(--border-style) !important;
+  color: var(--text-color) !important;
+}
+
+.doc-info span {
+  color: var(--text-muted) !important;
+}
+
+.doc-actions button {
+  background: var(--btn-sec-bg) !important;
+  color: var(--btn-sec-text) !important;
+  border: var(--border-style) !important;
+}
+
+.btn-secondary {
+  background: var(--btn-sec-bg) !important;
+  color: var(--btn-sec-text) !important;
+  border: var(--border-style) !important;
+}
+
+.empty-state {
+  color: var(--text-muted) !important;
+  border-color: var(--glass-border) !important;
+}
+
+/* Form inputs styling for theme adaptability */
+input, textarea, select {
+  background: var(--btn-sec-bg) !important;
+  color: var(--text-color) !important;
+  border: var(--border-style) !important;
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--text-muted) !important;
+  opacity: 0.7;
+}
+
+label {
+  color: var(--text-muted) !important;
+}
+
+.auth-box {
+  background: var(--glass-bg) !important;
+  border: var(--border-style) !important;
+  color: var(--text-color) !important;
+}
+
+.auth-box h2 {
+  color: var(--text-color) !important;
+}
+
+

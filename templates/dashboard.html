@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DocAI - Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <style>
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        .sidebar {
+            width: 250px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            border-right: 1px solid var(--glass-border);
+            padding: 2rem 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar .logo { margin-bottom: 3rem; text-align: center; }
+        .nav-item {
+            padding: 1rem;
+            color: #cbd5e1;
+            text-decoration: none;
+            border-radius: 12px;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s;
+            cursor: pointer;
+            display: block;
+        }
+        .nav-item:hover, .nav-item.active { background: rgba(255, 255, 255, 0.1); color: white; }
+        .main-content {
+            flex: 1;
+            padding: 3rem;
+            overflow-y: auto;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        .header h2 { font-size: 2rem; font-weight: 600; }
+
+        /* Quick Action Cards */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 3rem;
+        }
+        .action-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+        }
+        .action-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 15px 30px rgba(59, 130, 246, 0.15);
+        }
+        .action-card .icon { font-size: 2.5rem; margin-bottom: 0.8rem; }
+        .action-card h3 { font-size: 1rem; margin-bottom: 0.4rem; }
+        .action-card p { color: #64748b; font-size: 0.8rem; }
+
+        /* Document Sections */
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .doc-section { margin-bottom: 2.5rem; }
+
+        .doc-list { display: flex; flex-direction: column; gap: 0.8rem; }
+        .doc-item {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            padding: 1.2rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+        .doc-item:hover { border-color: var(--primary); }
+        .doc-info h4 { font-size: 0.95rem; font-weight: 600; }
+        .doc-info span { font-size: 0.8rem; color: #64748b; }
+        .doc-actions { display: flex; gap: 0.5rem; }
+        .doc-actions button {
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+            border-radius: 10px;
+            border: 1px solid var(--glass-border);
+            background: rgba(255,255,255,0.05);
+            color: #e2e8f0;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .doc-actions button:hover { background: rgba(255,255,255,0.1); }
+        .doc-actions .delete-btn:hover { background: rgba(239, 68, 68, 0.2); color: #ef4444; border-color: #ef4444; }
+
+        .empty-state {
+            color: #475569;
+            font-size: 0.9rem;
+            padding: 1rem;
+            text-align: center;
+            background: rgba(255,255,255,0.02);
+            border-radius: 14px;
+            border: 1px dashed rgba(255,255,255,0.08);
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container { flex-direction: column; }
+            .sidebar {
+                width: 100%;
+                flex-direction: row;
+                padding: 1rem;
+                overflow-x: auto;
+                gap: 0.5rem;
+            }
+            .sidebar .logo { margin-bottom: 0; margin-right: 1rem; }
+            .nav-item { white-space: nowrap; padding: 0.7rem 1rem; }
+            .main-content { padding: 1.5rem; }
+            .quick-actions { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-elements">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+    
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="logo">DocAI<span class="dot">.</span></div>
+            <a href="/dashboard" class="nav-item active">Biblioteca</a>
+            <a href="/create/resume" class="nav-item">Criar Currículo</a>
+            <a href="/create/contract" class="nav-item">Criar Contrato</a>
+            <a href="/create/report" class="nav-item">Criar Relatório</a>
+            <a href="/converter" class="nav-item">Conversor de Arquivos</a>
+            <div style="margin-top: auto;">
+                <a href="#" class="nav-item" id="logoutBtn" style="color: #ef4444;">Sair</a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="header">
+                <h2>Dashboard</h2>
+                <button id="themeToggle" class="btn-secondary">Modo Escuro</button>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <a href="/create/resume" class="action-card">
+                    <div class="icon">📄</div>
+                    <h3>Novo Currículo</h3>
+                    <p>Gerar com IA</p>
+                </a>
+                <a href="/create/contract" class="action-card">
+                    <div class="icon">📋</div>
+                    <h3>Novo Contrato</h3>
+                    <p>Gerar com IA</p>
+                </a>
+                <a href="/create/report" class="action-card">
+                    <div class="icon">📊</div>
+                    <h3>Novo Relatório</h3>
+                    <p>Gerar com IA</p>
+                </a>
+                <a href="/converter" class="action-card">
+                    <div class="icon">🔄</div>
+                    <h3>Conversor</h3>
+                    <p>Converter arquivos</p>
+                </a>
+            </div>
+
+            <!-- Document Library -->
+            <div class="doc-section">
+                <div class="section-title">📄 Currículos</div>
+                <div class="doc-list" id="resume-list">
+                    <div class="empty-state">Nenhum currículo gerado ainda</div>
+                </div>
+            </div>
+
+            <div class="doc-section">
+                <div class="section-title">📋 Contratos</div>
+                <div class="doc-list" id="contract-list">
+                    <div class="empty-state">Nenhum contrato gerado ainda</div>
+                </div>
+            </div>
+
+            <div class="doc-section">
+                <div class="section-title">📊 Relatórios</div>
+                <div class="doc-list" id="report-list">
+                    <div class="empty-state">Nenhum relatório gerado ainda</div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('token');
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!token) { window.location.href = '/login'; return; }
+            loadDocuments();
+
+            document.getElementById('logoutBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                localStorage.removeItem('token');
+                window.location.href = '/login';
+            });
+        });
+
+        async function loadDocuments() {
+            try {
+                const res = await fetch('/api/docs/list', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+
+                if (res.ok) {
+                    const resumes = data.documents.filter(d => d.type === 'resume');
+                    const contracts = data.documents.filter(d => d.type === 'contract');
+                    const reports = data.documents.filter(d => d.type === 'report');
+
+                    renderDocList('resume-list', resumes);
+                    renderDocList('contract-list', contracts);
+                    renderDocList('report-list', reports);
+                }
+            } catch (err) {
+                console.error('Erro ao carregar documentos:', err);
+            }
+        }
+
+        function renderDocList(containerId, docs) {
+            const container = document.getElementById(containerId);
+            if (docs.length === 0) return;
+
+            container.innerHTML = docs.map(doc => `
+                <div class="doc-item">
+                    <div class="doc-info">
+                        <h4>${doc.title}</h4>
+                        <span>${new Date(doc.created_at).toLocaleDateString('pt-BR')} às ${new Date(doc.created_at).toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})}</span>
+                    </div>
+                    <div class="doc-actions">
+                        <button onclick="downloadDoc(${doc.id}, '${doc.title}')">⬇ Baixar</button>
+                        <button class="delete-btn" onclick="deleteDoc(${doc.id})">🗑 Excluir</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function downloadDoc(id, title) {
+            const res = await fetch(`/api/docs/download/${id}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const blob = await res.blob();
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = title + '.pdf'; a.click();
+        }
+
+        async function deleteDoc(id) {
+            if (!confirm('Tem certeza que deseja excluir este documento?')) return;
+            const res = await fetch(`/api/docs/delete/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (res.ok) loadDocuments();
+        }
+    </script>
+</body>
+</html>
