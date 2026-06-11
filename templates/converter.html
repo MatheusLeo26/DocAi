@@ -377,7 +377,9 @@
                         const a = document.createElement('a');
                         a.href = url;
                         const baseName = selectedFile.name.substring(0, selectedFile.name.lastIndexOf('.'));
-                        a.download = `${baseName}.${targetFormat.value}`;
+                        const downloadExt = targetFormat.value === 'pdfa' ? 'pdf' : targetFormat.value;
+                        const suffix = targetFormat.value === 'pdfa' ? '_pdfa' : '';
+                        a.download = `${baseName}${suffix}.${downloadExt}`;
                         a.click();
                     } else {
                         const err = await res.json();

@@ -1,5 +1,6 @@
 import requests
 import json
+import os
 
 OLLAMA_URL = "http://127.0.0.1:11434/api/generate"
 MODEL_NAME = "llama3.2:latest"
@@ -35,13 +36,32 @@ Informações do relatório:
 }
 
 def generate_content(doc_type, user_data):
-    """Send user data to Ollama and get professionally formatted HTML content."""
+    """Generate professional HTML content using Gemini API if configured, otherwise fallback to Ollama."""
     prompt_template = PROMPTS.get(doc_type)
     if not prompt_template:
         raise ValueError(f"Tipo de documento inválido: {doc_type}")
 
     prompt = prompt_template.format(user_data=user_data)
+    
+    gemini_key = os.environ.get("GEMINI_API_KEY")
+    if gemini_key:
+        try:
+            import google.generativeai as genai
+            genai.configure(api_key=gemini_key)
+            model = genai.GenerativeModel("gemini-2.5-flash")
+            response = model.generate_content(prompt)
+            # Remove markdown block enclosures if Gemini returns them
+            text = response.text.strip()
+            if text.startswith("```html"):
+                text = text[7:]
+            if text.endswith("```"):
+                text = text[:-3]
+            return text.strip()
+        except Exception as e:
+            # If Gemini fails, log or fall through to Ollama fallback
+            print(f"Erro ao usar Gemini, tentando Ollama: {e}")
 
+    # Fallback to Ollama
     try:
         response = requests.post(OLLAMA_URL, json={
             "model": MODEL_NAME,
@@ -59,4 +79,5 @@ def generate_content(doc_type, user_data):
         else:
             raise Exception(f"Ollama error: {response.status_code} - {response.text}")
     except requests.exceptions.ConnectionError:
-        raise Exception("Não foi possível conectar ao Ollama. Verifique se o Ollama está rodando (ollama serve).")
+        raise Exception("Não foi possível conectar ao Gemini (sem chave GEMINI_API_KEY) ou ao Ollama. Verifique se o Ollama está rodando ou defina GEMINI_API_KEY.")
+

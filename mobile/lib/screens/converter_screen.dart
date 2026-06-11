@@ -80,11 +80,12 @@ class _ConverterScreenState extends State<ConverterScreen> {
 
       if (bytes != null) {
         final outName = _selectedFile!.path.split(Platform.pathSeparator).last.split('.').first;
-        final finalExt = _targetFormat ?? 'pdf';
+        final finalExt = _targetFormat == 'pdfa' ? 'pdf' : (_targetFormat ?? 'pdf');
+        final suffix = _targetFormat == 'pdfa' ? '_pdfa' : '';
         
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Conversão finalizada com sucesso! Arquivo "$outName.$finalExt" baixado (${bytes.length} bytes)'),
+            content: Text('Conversão finalizada com sucesso! Arquivo "$outName$suffix.$finalExt" baixado (${bytes.length} bytes)'),
             backgroundColor: Colors.green,
           ),
         );
