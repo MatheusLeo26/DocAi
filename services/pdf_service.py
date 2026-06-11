@@ -106,7 +106,9 @@ async def _generate_pdf(html_content, output_path):
     async with async_playwright() as p:
         browser = await p.chromium.launch()
         page = await browser.new_page()
-        await page.set_content(html_content, wait_until="networkidle")
+        await page.set_content(html_content, wait_until="domcontentloaded", timeout=60000)
+        # Wait a brief moment for fonts to load, but don't block forever
+        await page.wait_for_timeout(2000)
         await page.pdf(
             path=output_path,
             format="A4",
@@ -122,6 +124,6 @@ def create_document_pdf(doc_type, ai_content, output_path):
     if not template:
         raise ValueError(f"Template não encontrado para tipo: {doc_type}")
 
-    full_html = template.format(content=ai_content)
+    full_html = template.replace("{content}", ai_content)
     generate_pdf_sync(full_html, output_path)
     return output_path
