@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
     <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
     <style>
         .dashboard-container {
             display: flex;
@@ -229,9 +230,8 @@
 
         async function loadDocuments() {
             try {
-                const res = await fetch('/api/docs/list', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
+                const res = await authFetch('/api/docs/list');
+                if (!res) return;
                 const data = await res.json();
 
                 if (res.ok) {
@@ -267,9 +267,8 @@
         }
 
         async function downloadDoc(id, title) {
-            const res = await fetch(`/api/docs/download/${id}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
+            const res = await authFetch(`/api/docs/download/${id}`);
+            if (!res) return;
             const blob = await res.blob();
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -278,11 +277,8 @@
 
         async function deleteDoc(id) {
             if (!confirm('Tem certeza que deseja excluir este documento?')) return;
-            const res = await fetch(`/api/docs/delete/${id}`, {
-                method: 'DELETE',
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (res.ok) loadDocuments();
+            const res = await authFetch(`/api/docs/delete/${id}`, { method: 'DELETE' });
+            if (res && res.ok) loadDocuments();
         }
     </script>
 </body>

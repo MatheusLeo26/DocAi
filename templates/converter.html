@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
     <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
     <style>
         .converter-container {
             display: flex;
@@ -363,13 +364,13 @@
                 loadingOverlay.classList.add('show');
 
                 try {
-                    const res = await fetch(endpoint, {
+                    const res = await authFetch(endpoint, {
                         method: 'POST',
-                        headers: { 'Authorization': `Bearer ${token}` },
                         body: formData
                     });
 
                     loadingOverlay.classList.remove('show');
+                    if (!res) return;
 
                     if (res.ok) {
                         const blob = await res.blob();

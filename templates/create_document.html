@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
     <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
     <style>
         .create-container {
             display: flex;
@@ -428,14 +429,12 @@
             document.getElementById('loadingOverlay').classList.add('show');
 
             try {
-                const res = await fetch('/api/docs/generate', {
+                const res = await authFetch('/api/docs/generate', {
                     method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    },
                     body: formData
                 });
 
+                if (!res) return;
                 const result = await res.json();
                 document.getElementById('loadingOverlay').classList.remove('show');
 
@@ -445,9 +444,11 @@
                     document.getElementById('downloadLink').href = `/api/docs/download/${result.document.id}`;
                     document.getElementById('downloadLink').onclick = (ev) => {
                         ev.preventDefault();
-                        fetch(`/api/docs/download/${result.document.id}`, {
-                            headers: { 'Authorization': `Bearer ${token}` }
-                        }).then(r => r.blob()).then(blob => {
+                        authFetch(`/api/docs/download/${result.document.id}`).then(r => {
+                            if (!r) return;
+                            return r.blob();
+                        }).then(blob => {
+                            if (!blob) return;
                             const url = URL.createObjectURL(blob);
                             const a = document.createElement('a');
                             a.href = url; a.download = title + '.pdf'; a.click();
