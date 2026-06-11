@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DocAI - Criar Documento</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
     <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
     <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
@@ -104,6 +105,93 @@
             font-size: 0.8rem;
             color: #64748b;
             margin-top: 0.4rem;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        @media (max-width: 768px) {
+            .contact-grid { grid-template-columns: 1fr; }
+        }
+        .contact-grid .form-group { margin-bottom: 0; }
+        .contact-grid .input-icon-wrapper {
+            position: relative;
+        }
+        .contact-grid .input-icon-wrapper i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+            font-size: 1rem;
+        }
+        .contact-grid .input-icon-wrapper input {
+            padding-left: 2.5rem;
+        }
+
+        .paste-zone {
+            border: 2px dashed var(--glass-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 0.5rem;
+            position: relative;
+        }
+        .paste-zone:hover, .paste-zone.drag-over {
+            border-color: var(--primary);
+            background: rgba(59, 130, 246, 0.05);
+            color: #94a3b8;
+        }
+        .paste-zone .paste-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        .paste-zone .paste-hint {
+            font-size: 0.8rem;
+            color: #475569;
+            margin-top: 0.3rem;
+        }
+        .pasted-images {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+        .pasted-img-wrapper {
+            position: relative;
+            width: 90px;
+            height: 90px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+        }
+        .pasted-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .pasted-img-wrapper .remove-pasted {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
         }
 
         .generate-btn {
@@ -253,11 +341,48 @@
                         <label>Nome completo</label>
                         <input type="text" id="resume-name" placeholder="Seu nome completo" required>
                     </div>
-                    <div class="form-group">
-                        <label>Telefone / Email / LinkedIn / Cidade</label>
-                        <input type="text" id="resume-contact" placeholder="(11) 99999-9999 | email@email.com | linkedin.com/in/seu-perfil | São Paulo - SP">
+
+                    <label style="display:block; margin-bottom: 0.75rem; font-size: 0.95rem; color: #94a3b8;">Informações de Contato</label>
+                    <div class="contact-grid">
+                        <div class="form-group">
+                            <div class="input-icon-wrapper">
+                                <i class="fas fa-envelope"></i>
+                                <input type="email" id="resume-email" placeholder="seu@email.com">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-icon-wrapper">
+                                <i class="fas fa-phone"></i>
+                                <input type="tel" id="resume-phone" placeholder="(11) 99999-9999">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-icon-wrapper">
+                                <i class="fab fa-linkedin"></i>
+                                <input type="url" id="resume-linkedin" placeholder="https://linkedin.com/in/seu-perfil">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-icon-wrapper">
+                                <i class="fab fa-github"></i>
+                                <input type="url" id="resume-github" placeholder="https://github.com/seu-usuario">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-icon-wrapper">
+                                <i class="fas fa-globe"></i>
+                                <input type="url" id="resume-portfolio" placeholder="https://seu-portfolio.com">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-icon-wrapper">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <input type="text" id="resume-city" placeholder="São Paulo - SP">
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-group">
+
+                    <div class="form-group" style="margin-top: 1.5rem;">
                         <label>Objetivo / Cargo desejado</label>
                         <input type="text" id="resume-objective" placeholder="Ex: Desenvolvedor Full Stack Pleno">
                     </div>
@@ -275,9 +400,18 @@
                         <textarea id="resume-skills" placeholder="Ex: Python, JavaScript, Flask, PostgreSQL, Git, Docker, inglês intermediário, trabalho em equipe, liderança"></textarea>
                     </div>
                     <div class="form-group">
+                        <label>Sugestões pessoais / Informações adicionais (opcional)</label>
+                        <textarea id="resume-suggestions" placeholder="Ex: Desejo que o currículo destaque meu perfil de liderança, prefiro cores sóbrias, ou adicione certificações específicas..."></textarea>
+                    </div>
+                    <div class="form-group">
                         <label>Imagens/Anexos complementares (opcional)</label>
                         <input type="file" id="resume-images" accept="image/*" multiple>
-                        <div class="hint">Anexe imagens (currículo antigo, notas, etc.) para a IA ler e complementar o currículo.</div>
+                        <div id="resume-paste-zone" class="paste-zone" tabindex="0">
+                            <span class="paste-icon">📋</span>
+                            Cole uma imagem aqui com <strong>Ctrl+V</strong><br>ou arraste e solte
+                            <div class="paste-hint">Aceita prints da tela, fotos copiadas, etc.</div>
+                        </div>
+                        <div class="pasted-images" id="resume-pasted-images"></div>
                     </div>
                     <button type="submit" class="generate-btn">🤖 Gerar Currículo com IA</button>
                 </form>
@@ -309,8 +443,18 @@
                         <div class="hint">Quanto mais detalhes, melhor a IA consegue gerar um contrato completo e preciso.</div>
                     </div>
                     <div class="form-group">
+                        <label>Sugestões pessoais / Informações adicionais (opcional)</label>
+                        <textarea id="contract-suggestions" placeholder="Ex: Incluir uma cláusula de confidencialidade estrita, prever multa de 10% em caso de atraso..."></textarea>
+                    </div>
+                    <div class="form-group">
                         <label>Imagens/Anexos complementares (opcional)</label>
                         <input type="file" id="contract-images" accept="image/*" multiple>
+                        <div id="contract-paste-zone" class="paste-zone" tabindex="0">
+                            <span class="paste-icon">📋</span>
+                            Cole uma imagem aqui com <strong>Ctrl+V</strong><br>ou arraste e solte
+                            <div class="paste-hint">Aceita prints da tela, fotos copiadas, etc.</div>
+                        </div>
+                        <div class="pasted-images" id="contract-pasted-images"></div>
                         <div class="hint">Anexe fotos de rascunhos, certidões ou contratos anteriores para a IA ler.</div>
                     </div>
                     <button type="submit" class="generate-btn">🤖 Gerar Contrato com IA</button>
@@ -339,8 +483,18 @@
                         <div class="hint">Inclua dados brutos, números e observações. A IA vai organizar e formatar profissionalmente.</div>
                     </div>
                     <div class="form-group">
+                        <label>Sugestões pessoais / Informações adicionais (opcional)</label>
+                        <textarea id="report-suggestions" placeholder="Ex: Adicionar seção de análise de concorrência, focar nos resultados de marketing digital..."></textarea>
+                    </div>
+                    <div class="form-group">
                         <label>Imagens/Anexos complementares (opcional)</label>
                         <input type="file" id="report-images" accept="image/*" multiple>
+                        <div id="report-paste-zone" class="paste-zone" tabindex="0">
+                            <span class="paste-icon">📋</span>
+                            Cole uma imagem aqui com <strong>Ctrl+V</strong><br>ou arraste e solte
+                            <div class="paste-hint">Aceita prints da tela, fotos copiadas, etc.</div>
+                        </div>
+                        <div class="pasted-images" id="report-pasted-images"></div>
                         <div class="hint">Anexe gráficos, fotos de planilhas ou notas de reuniões para a IA processar.</div>
                     </div>
                     <button type="submit" class="generate-btn">🤖 Gerar Relatório com IA</button>
@@ -383,19 +537,38 @@
 
         function collectData() {
             if (DOC_TYPE === 'resume') {
+                const contactParts = [];
+                const email = document.getElementById('resume-email').value.trim();
+                const phone = document.getElementById('resume-phone').value.trim();
+                const linkedin = document.getElementById('resume-linkedin').value.trim();
+                const github = document.getElementById('resume-github').value.trim();
+                const portfolio = document.getElementById('resume-portfolio').value.trim();
+                const city = document.getElementById('resume-city').value.trim();
+
+                if (email) contactParts.push(`Email: ${email}`);
+                if (phone) contactParts.push(`Telefone: ${phone}`);
+                if (linkedin) contactParts.push(`LinkedIn: ${linkedin}`);
+                if (github) contactParts.push(`GitHub: ${github}`);
+                if (portfolio) contactParts.push(`Portfólio/Site: ${portfolio}`);
+                if (city) contactParts.push(`Cidade: ${city}`);
+
+                const suggestions = document.getElementById('resume-suggestions').value.trim();
+
                 return {
                     title: document.getElementById('resume-title').value,
-                    data: `Nome: ${document.getElementById('resume-name').value}\nContato: ${document.getElementById('resume-contact').value}\nObjetivo: ${document.getElementById('resume-objective').value}\nExperiência: ${document.getElementById('resume-experience').value}\nFormação: ${document.getElementById('resume-education').value}\nHabilidades: ${document.getElementById('resume-skills').value}`
+                    data: `Nome: ${document.getElementById('resume-name').value}\nContato:\n${contactParts.join('\n')}\nObjetivo: ${document.getElementById('resume-objective').value}\nExperiência: ${document.getElementById('resume-experience').value}\nFormação: ${document.getElementById('resume-education').value}\nHabilidades: ${document.getElementById('resume-skills').value}\nSugestões/Informações Adicionais: ${suggestions}`
                 };
             } else if (DOC_TYPE === 'contract') {
+                const suggestions = document.getElementById('contract-suggestions').value.trim();
                 return {
                     title: document.getElementById('contract-title').value,
-                    data: `Tipo de contrato: ${document.getElementById('contract-type').value}\nContratante: ${document.getElementById('contract-party1').value}\nContratado: ${document.getElementById('contract-party2').value}\nObjeto e condições: ${document.getElementById('contract-object').value}`
+                    data: `Tipo de contrato: ${document.getElementById('contract-type').value}\nContratante: ${document.getElementById('contract-party1').value}\nContratado: ${document.getElementById('contract-party2').value}\nObjeto e condições: ${document.getElementById('contract-object').value}\nSugestões/Informações Adicionais: ${suggestions}`
                 };
             } else if (DOC_TYPE === 'report') {
+                const suggestions = document.getElementById('report-suggestions').value.trim();
                 return {
                     title: document.getElementById('report-title').value,
-                    data: `Empresa: ${document.getElementById('report-company').value}\nPeríodo: ${document.getElementById('report-period').value}\nDados: ${document.getElementById('report-data').value}`
+                    data: `Empresa: ${document.getElementById('report-company').value}\nPeríodo: ${document.getElementById('report-period').value}\nDados: ${document.getElementById('report-data').value}\nSugestões/Informações Adicionais: ${suggestions}`
                 };
             }
         }
@@ -410,7 +583,7 @@
             formData.append('title', title);
             formData.append('data', data);
 
-            // Collect files
+            // Collect files from file input
             let filesInput = null;
             if (DOC_TYPE === 'resume') {
                 filesInput = document.getElementById('resume-images');
@@ -424,6 +597,12 @@
                 for (let i = 0; i < filesInput.files.length; i++) {
                     formData.append('images', filesInput.files[i]);
                 }
+            }
+
+            // Collect pasted clipboard images
+            const pastedFiles = window._pastedFiles || [];
+            for (const file of pastedFiles) {
+                formData.append('images', file);
             }
 
             document.getElementById('loadingOverlay').classList.add('show');
@@ -466,6 +645,71 @@
         document.getElementById('resumeForm')?.addEventListener('submit', submitDocument);
         document.getElementById('contractForm')?.addEventListener('submit', submitDocument);
         document.getElementById('reportForm')?.addEventListener('submit', submitDocument);
+
+        // ========== Clipboard Paste & Drag-Drop for Images ==========
+        window._pastedFiles = [];
+
+        function setupPasteZone(zoneId, previewId) {
+            const zone = document.getElementById(zoneId);
+            const preview = document.getElementById(previewId);
+            if (!zone || !preview) return;
+
+            function addPastedImage(file) {
+                window._pastedFiles.push(file);
+                const wrapper = document.createElement('div');
+                wrapper.className = 'pasted-img-wrapper';
+                const img = document.createElement('img');
+                img.src = URL.createObjectURL(file);
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'remove-pasted';
+                removeBtn.innerHTML = '×';
+                removeBtn.onclick = () => {
+                    const idx = window._pastedFiles.indexOf(file);
+                    if (idx > -1) window._pastedFiles.splice(idx, 1);
+                    wrapper.remove();
+                };
+                wrapper.appendChild(img);
+                wrapper.appendChild(removeBtn);
+                preview.appendChild(wrapper);
+            }
+
+            // Ctrl+V paste anywhere on page (once zone exists)
+            document.addEventListener('paste', (e) => {
+                const items = e.clipboardData?.items;
+                if (!items) return;
+                for (const item of items) {
+                    if (item.type.startsWith('image/')) {
+                        e.preventDefault();
+                        const file = item.getAsFile();
+                        if (file) addPastedImage(file);
+                    }
+                }
+            });
+
+            // Drag & drop
+            zone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                zone.classList.add('drag-over');
+            });
+            zone.addEventListener('dragleave', () => {
+                zone.classList.remove('drag-over');
+            });
+            zone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                zone.classList.remove('drag-over');
+                const files = e.dataTransfer?.files;
+                if (files) {
+                    for (const file of files) {
+                        if (file.type.startsWith('image/')) {
+                            addPastedImage(file);
+                        }
+                    }
+                }
+            });
+        }
+
+        // Set up paste zone for the active form
+        setupPasteZone(DOC_TYPE + '-paste-zone', DOC_TYPE + '-pasted-images');
     </script>
 </body>
 </html>

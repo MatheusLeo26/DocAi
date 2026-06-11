@@ -9,6 +9,21 @@ PROMPTS = {
     "resume": """Você é um especialista em recursos humanos e currículos profissionais.
 Com base nas informações fornecidas abaixo, gere um currículo profissional completo, bem estruturado e formatado em HTML.
 O currículo deve seguir os padrões do mercado brasileiro, com linguagem formal e objetiva.
+
+Se o usuário fornecer preferências, diretrizes ou dados extras no campo "Sugestões/Informações Adicionais", certifique-se de incorporá-los e segui-los fielmente no currículo gerado.
+
+REGRAS OBRIGATÓRIAS PARA A SEÇÃO DE CONTATO:
+1. Use ícones FontAwesome antes de cada informação de contato. Exemplos:
+   - Email: <i class="fas fa-envelope"></i> email@exemplo.com
+   - Telefone: <i class="fas fa-phone"></i> (11) 99999-9999
+   - LinkedIn: <i class="fab fa-linkedin"></i> <a href="URL_COMPLETA">URL_COMPLETA</a>
+   - GitHub: <i class="fab fa-github"></i> <a href="URL_COMPLETA">URL_COMPLETA</a>
+   - Portfólio/Site: <i class="fas fa-globe"></i> <a href="URL_COMPLETA">URL_COMPLETA</a>
+   - Cidade: <i class="fas fa-map-marker-alt"></i> Cidade - UF
+2. NUNCA encurte ou resuma links. Sempre exiba a URL COMPLETA e EXATA fornecida pelo usuário, tanto no texto visível do link quanto no atributo href.
+3. Todos os links devem ser clicáveis usando a tag <a> com target="_blank".
+4. Organize a seção de contato horizontalmente ou em lista elegante logo abaixo do nome.
+
 Use tags HTML para estruturar o conteúdo (h1, h2, h3, p, ul, li, etc). NÃO inclua tags <html>, <head> ou <body>.
 Retorne APENAS o HTML do conteúdo do currículo, sem explicações adicionais.
 
@@ -19,6 +34,9 @@ Informações do candidato:
 Com base nas informações fornecidas abaixo, gere um contrato profissional completo, bem estruturado e formatado em HTML.
 O contrato deve seguir os padrões legais brasileiros, com cláusulas claras e linguagem jurídica adequada.
 Inclua todas as cláusulas essenciais: objeto, obrigações das partes, prazo, valor, rescisão, foro, etc.
+
+Se o usuário fornecer preferências, cláusulas específicas ou diretrizes extras no campo "Sugestões/Informações Adicionais", certifique-se de incorporá-las e segui-los fielmente no contrato gerado.
+
 Use tags HTML para estruturar o conteúdo (h1, h2, h3, p, ul, li, etc). NÃO inclua tags <html>, <head> ou <body>.
 Retorne APENAS o HTML do conteúdo do contrato, sem explicações adicionais.
 
@@ -28,6 +46,9 @@ Informações do contrato:
     "report": """Você é um analista profissional especializado em relatórios corporativos.
 Com base nas informações fornecidas abaixo, gere um relatório profissional completo, bem estruturado e formatado em HTML.
 O relatório deve seguir os padrões corporativos, com linguagem formal, dados organizados e conclusões claras.
+
+Se o usuário fornecer preferências, diretrizes de análise ou dados extras no campo "Sugestões/Informações Adicionais", certifique-se de incorporá-los e segui-los fielmente no relatório gerado.
+
 Use tags HTML para estruturar o conteúdo (h1, h2, h3, p, ul, li, table, etc). NÃO inclua tags <html>, <head> ou <body>.
 Retorne APENAS o HTML do conteúdo do relatório, sem explicações adicionais.
 
