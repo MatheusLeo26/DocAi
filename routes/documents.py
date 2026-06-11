@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify, send_file
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from werkzeug.utils import secure_filename
 from models import Document, db
 from services.ai_service import generate_content
 from services.pdf_service import create_document_pdf
@@ -17,11 +18,21 @@ UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__f
 def generate_document():
     """Receive user data, generate content with AI, create PDF, save to DB."""
     user_id = get_jwt_identity()
-    data = request.get_json()
+    
+    # Handle both JSON and multipart form data
+    if request.is_json:
+        data = request.get_json()
+        doc_type = data.get('type')
+        user_data = data.get('data')
+        title = data.get('title')
+        files = []
+    else:
+        doc_type = request.form.get('type')
+        user_data = request.form.get('data')
+        title = request.form.get('title')
+        files = request.files.getlist('images')
 
-    doc_type = data.get('type')  # 'resume', 'contract', 'report'
-    user_data = data.get('data')  # Raw text with user information
-    title = data.get('title', f'Documento {datetime.now().strftime("%d/%m/%Y %H:%M")}')
+    title = title or f'Documento {datetime.now().strftime("%d/%m/%Y %H:%M")}'
 
     if not doc_type or not user_data:
         return jsonify({'message': 'Tipo de documento e dados são obrigatórios'}), 400
@@ -29,9 +40,22 @@ def generate_document():
     if doc_type not in ['resume', 'contract', 'report']:
         return jsonify({'message': 'Tipo inválido. Use: resume, contract ou report'}), 400
 
+    temp_image_paths = []
     try:
-        # Step 1: Generate professional content with AI (Ollama)
-        ai_content = generate_content(doc_type, user_data)
+        # Save uploaded images temporarily
+        if files:
+            temp_dir = os.path.join(UPLOAD_FOLDER, str(user_id), 'temp')
+            os.makedirs(temp_dir, exist_ok=True)
+            for f in files:
+                if f and f.filename:
+                    filename = secure_filename(f.filename)
+                    unique_name = f"{uuid.uuid4().hex[:8]}_{filename}"
+                    path = os.path.join(temp_dir, unique_name)
+                    f.save(path)
+                    temp_image_paths.append(path)
+
+        # Step 1: Generate professional content with AI
+        ai_content = generate_content(doc_type, user_data, temp_image_paths)
 
         # Step 2: Generate PDF with Playwright
         filename = f"{doc_type}_{uuid.uuid4().hex[:8]}.pdf"
@@ -51,6 +75,11 @@ def generate_document():
         db.session.add(doc)
         db.session.commit()
 
+        # Clean up temporary images
+        for path in temp_image_paths:
+            if os.path.exists(path):
+                os.remove(path)
+
         return jsonify({
             'message': 'Documento gerado com sucesso!',
             'document': {
@@ -62,6 +91,9 @@ def generate_document():
         }), 201
 
     except Exception as e:
+        for path in temp_image_paths:
+            if os.path.exists(path):
+                os.remove(path)
         return jsonify({'message': f'Erro ao gerar documento: {str(e)}'}), 500
 
 

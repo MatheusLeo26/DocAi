@@ -103,18 +103,31 @@ class ApiService {
     }
   }
 
-  static Future<bool> generateDocument(String type, String title, String data) async {
+  static Future<bool> generateDocument(String type, String title, String data, {List<File>? images}) async {
     try {
-      final headers = await _getHeaders();
-      final response = await http.post(
-        Uri.parse('$baseUrl/api/docs/generate'),
-        headers: headers,
-        body: jsonEncode({
-          'type': type,
-          'title': title,
-          'data': data,
-        }),
-      );
+      final token = await getToken();
+      final uri = Uri.parse('$baseUrl/api/docs/generate');
+      
+      var request = http.MultipartRequest('POST', uri);
+      if (token != null) {
+        request.headers['Authorization'] = 'Bearer $token';
+      }
+      
+      request.fields['type'] = type;
+      request.fields['title'] = title;
+      request.fields['data'] = data;
+      
+      if (images != null) {
+        for (var image in images) {
+          if (await image.exists()) {
+            request.files.add(await http.MultipartFile.fromPath('images', image.path));
+          }
+        }
+      }
+      
+      var streamedResponse = await request.send();
+      var response = await http.Response.fromStream(streamedResponse);
+      
       return response.statusCode == 201;
     } catch (e) {
       return false;

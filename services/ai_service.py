@@ -35,7 +35,7 @@ Informações do relatório:
 {user_data}"""
 }
 
-def generate_content(doc_type, user_data):
+def generate_content(doc_type, user_data, image_paths=None):
     """Generate professional HTML content using Gemini API if configured, otherwise fallback to Ollama."""
     prompt_template = PROMPTS.get(doc_type)
     if not prompt_template:
@@ -47,9 +47,20 @@ def generate_content(doc_type, user_data):
     if gemini_key:
         try:
             import google.generativeai as genai
+            from PIL import Image
             genai.configure(api_key=gemini_key)
             model = genai.GenerativeModel("gemini-2.5-flash")
-            response = model.generate_content(prompt)
+            
+            contents = []
+            if image_paths:
+                contents.append("Por favor, leia atentamente as imagens anexadas e utilize as informações contidas nelas para complementar, preencher e aprimorar os dados textuais fornecidos abaixo.\n\n")
+                for img_path in image_paths:
+                    if os.path.exists(img_path):
+                        contents.append(Image.open(img_path))
+            
+            contents.append(prompt)
+            
+            response = model.generate_content(contents)
             # Remove markdown block enclosures if Gemini returns them
             text = response.text.strip()
             if text.startswith("```html"):

@@ -28,3 +28,4 @@ ios/Flutter/ephemeral/
 .DS_Store
 Thumbs.db
 *.log
+.env

@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
 import '../services/api_service.dart';
 
 class CreateDocumentScreen extends StatefulWidget {
@@ -13,7 +15,32 @@ class CreateDocumentScreen extends StatefulWidget {
 class _CreateDocumentScreenState extends State<CreateDocumentScreen> {
   final _titleController = TextEditingController();
   final _dataController = TextEditingController();
+  final List<File> _selectedImages = [];
   bool _isLoading = false;
+
+  Future<void> _pickImages() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.image,
+      allowMultiple: true,
+    );
+
+    if (result != null) {
+      setState(() {
+        _selectedImages.addAll(
+          result.paths
+              .where((path) => path != null)
+              .map((path) => File(path!))
+              .toList(),
+        );
+      });
+    }
+  }
+
+  void _removeImage(int index) {
+    setState(() {
+      _selectedImages.removeAt(index);
+    });
+  }
 
   @override
   void initState() {
@@ -42,6 +69,7 @@ class _CreateDocumentScreenState extends State<CreateDocumentScreen> {
       widget.docType,
       _titleController.text.trim(),
       _dataController.text.trim(),
+      images: _selectedImages,
     );
 
     if (mounted) {
@@ -148,6 +176,74 @@ class _CreateDocumentScreenState extends State<CreateDocumentScreen> {
                         borderRadius: BorderRadius.circular(16),
                         borderSide: const BorderSide(color: Colors.blueAccent),
                       ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  
+                  // Image Attachments section
+                  const Text(
+                    'Anexos / Imagens complementares',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                  ),
+                  const SizedBox(height: 8),
+                  if (_selectedImages.isNotEmpty) ...[
+                    Container(
+                      height: 100,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: _selectedImages.length,
+                        itemBuilder: (context, index) {
+                          final file = _selectedImages[index];
+                          return Stack(
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.only(right: 8),
+                                width: 100,
+                                height: 100,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(color: const Color(0xFF334155)),
+                                  image: DecorationImage(
+                                    image: FileImage(file),
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                              Positioned(
+                                top: 4,
+                                right: 12,
+                                child: GestureDetector(
+                                  onTap: () => _removeImage(index),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(4),
+                                    decoration: const BoxDecoration(
+                                      color: Colors.redAccent,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(Icons.close, size: 16, color: Colors.white),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
+                  OutlinedButton.icon(
+                    onPressed: _pickImages,
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      side: const BorderSide(color: Color(0xFF334155)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                    icon: const Icon(Icons.add_a_photo, color: Colors.blueAccent),
+                    label: const Text(
+                      'Adicionar Imagem',
+                      style: TextStyle(color: Colors.white),
                     ),
                   ),
                   const SizedBox(height: 32),

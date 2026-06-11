@@ -273,6 +273,11 @@
                         <label>Habilidades e competências</label>
                         <textarea id="resume-skills" placeholder="Ex: Python, JavaScript, Flask, PostgreSQL, Git, Docker, inglês intermediário, trabalho em equipe, liderança"></textarea>
                     </div>
+                    <div class="form-group">
+                        <label>Imagens/Anexos complementares (opcional)</label>
+                        <input type="file" id="resume-images" accept="image/*" multiple>
+                        <div class="hint">Anexe imagens (currículo antigo, notas, etc.) para a IA ler e complementar o currículo.</div>
+                    </div>
                     <button type="submit" class="generate-btn">🤖 Gerar Currículo com IA</button>
                 </form>
             </div>
@@ -302,6 +307,11 @@
                         <textarea id="contract-object" placeholder="Descreva o que será contratado, prazos, valores, formas de pagamento e quaisquer condições especiais."></textarea>
                         <div class="hint">Quanto mais detalhes, melhor a IA consegue gerar um contrato completo e preciso.</div>
                     </div>
+                    <div class="form-group">
+                        <label>Imagens/Anexos complementares (opcional)</label>
+                        <input type="file" id="contract-images" accept="image/*" multiple>
+                        <div class="hint">Anexe fotos de rascunhos, certidões ou contratos anteriores para a IA ler.</div>
+                    </div>
                     <button type="submit" class="generate-btn">🤖 Gerar Contrato com IA</button>
                 </form>
             </div>
@@ -326,6 +336,11 @@
                         <label>Dados e informações do relatório</label>
                         <textarea id="report-data" placeholder="Insira todos os dados, números, métricas, observações e conclusões que devem constar no relatório. A IA vai organizar tudo de forma profissional com tabelas e gráficos descritivos."></textarea>
                         <div class="hint">Inclua dados brutos, números e observações. A IA vai organizar e formatar profissionalmente.</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Imagens/Anexos complementares (opcional)</label>
+                        <input type="file" id="report-images" accept="image/*" multiple>
+                        <div class="hint">Anexe gráficos, fotos de planilhas ou notas de reuniões para a IA processar.</div>
                     </div>
                     <button type="submit" class="generate-btn">🤖 Gerar Relatório com IA</button>
                 </form>
@@ -389,16 +404,36 @@
             const token = localStorage.getItem('token');
             const { title, data } = collectData();
 
+            const formData = new FormData();
+            formData.append('type', DOC_TYPE);
+            formData.append('title', title);
+            formData.append('data', data);
+
+            // Collect files
+            let filesInput = null;
+            if (DOC_TYPE === 'resume') {
+                filesInput = document.getElementById('resume-images');
+            } else if (DOC_TYPE === 'contract') {
+                filesInput = document.getElementById('contract-images');
+            } else if (DOC_TYPE === 'report') {
+                filesInput = document.getElementById('report-images');
+            }
+
+            if (filesInput && filesInput.files.length > 0) {
+                for (let i = 0; i < filesInput.files.length; i++) {
+                    formData.append('images', filesInput.files[i]);
+                }
+            }
+
             document.getElementById('loadingOverlay').classList.add('show');
 
             try {
                 const res = await fetch('/api/docs/generate', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
-                    body: JSON.stringify({ type: DOC_TYPE, data, title })
+                    body: formData
                 });
 
                 const result = await res.json();
