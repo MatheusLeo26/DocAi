@@ -45,5 +45,24 @@ def convert_docx_to_pdf(input_path: str) -> str:
         # Fallback to the old method
         html_content = f"<!DOCTYPE html><html><head><meta charset='UTF-8'></head><body>{_docx_to_html(input_path)}</body></html>"
         generate_pdf_sync(html_content, output_path)
-    
     return output_path
+
+
+def convert_pdf_to_docx(input_path: str) -> str:
+    """Convert a .pdf file to a .docx file and return the docx file path.
+    Uses pdf2docx Converter to rebuild the layout.
+    """
+    from pdf2docx import Converter
+
+    base_name = os.path.splitext(os.path.basename(input_path))[0]
+    output_dir = os.path.join(current_app.instance_path, 'uploads')
+    os.makedirs(output_dir, exist_ok=True)
+    output_path = os.path.join(output_dir, f"{base_name}.docx")
+
+    # Perform conversion
+    cv = Converter(input_path)
+    cv.convert(output_path, start=0, end=None)
+    cv.close()
+
+    return output_path
+

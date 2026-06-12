@@ -2,7 +2,7 @@ import os
 from flask import Blueprint, request, jsonify, send_file, current_app
 from werkzeug.utils import secure_filename
 from services.image_converter import convert_image
-from services.doc_converter import convert_docx_to_pdf
+from services.doc_converter import convert_docx_to_pdf, convert_pdf_to_docx
 
 conversion_bp = Blueprint('conversion_bp', __name__)
 
@@ -67,6 +67,25 @@ def convert_pdf_route():
         return send_file(output_path, as_attachment=True)
     except Exception as e:
         return jsonify({'message': str(e)}), 500
+
+
+@conversion_bp.route('/pdf-to-docx', methods=['POST'])
+def convert_pdf_to_docx_route():
+    if 'file' not in request.files:
+        return jsonify({'message': 'No file provided'}), 400
+    file = request.files['file']
+    filename = secure_filename(file.filename)
+    if not filename.lower().endswith('.pdf'):
+        return jsonify({'message': 'Only .pdf files supported'}), 400
+    input_path = os.path.join(current_app.instance_path, 'uploads', filename)
+    os.makedirs(os.path.dirname(input_path), exist_ok=True)
+    file.save(input_path)
+    try:
+        docx_path = convert_pdf_to_docx(input_path)
+        return send_file(docx_path, as_attachment=True)
+    except Exception as e:
+        return jsonify({'message': str(e)}), 500
+
 
 
 @conversion_bp.route('/reorder-pdf', methods=['POST'])

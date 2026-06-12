@@ -572,6 +572,7 @@
                     formatGroup.style.display = 'block';
                     targetFormat.innerHTML = `
                         <option value="pdfa">PDF/A</option>
+                        <option value="docx">DOCX (Converter para Word)</option>
                         <option value="compress">Comprimir PDF</option>
                         <option value="split">Dividir PDF</option>
                         <option value="reorder">Reorganizar Páginas</option>
@@ -701,6 +702,10 @@
                     if (targetVal === 'pdfa') {
                         endpoint = '/api/convert/pdf';
                         suffix = '_pdfa';
+                    } else if (targetVal === 'docx') {
+                        endpoint = '/api/convert/pdf-to-docx';
+                        downloadExt = 'docx';
+                        suffix = '_convertido';
                     } else if (targetVal === 'compress') {
                         endpoint = '/api/convert/compress-pdf';
                         formData.append('level', document.getElementById('compressLevel').value);
