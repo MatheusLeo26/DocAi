@@ -1,6 +1,7 @@
 import requests
 import json
 import os
+import re
 
 OLLAMA_URL = "http://127.0.0.1:11434/api/generate"
 MODEL_NAME = "llama3.2:latest"
@@ -25,6 +26,7 @@ REGRAS OBRIGATÓRIAS PARA A SEÇÃO DE CONTATO:
 4. Organize a seção de contato horizontalmente ou em lista elegante logo abaixo do nome.
 
 Use tags HTML para estruturar o conteúdo (h1, h2, h3, p, ul, li, etc). NÃO inclua tags <html>, <head> ou <body>.
+IMPORTANTE: NÃO use formatação Markdown (como **texto**). Se precisar destacar algo, use as tags HTML apropriadas (como <strong>texto</strong>).
 Retorne APENAS o HTML do conteúdo do currículo, sem explicações adicionais.
 
 Informações do candidato:
@@ -38,6 +40,7 @@ Inclua todas as cláusulas essenciais: objeto, obrigações das partes, prazo, v
 Se o usuário fornecer preferências, cláusulas específicas ou diretrizes extras no campo "Sugestões/Informações Adicionais", certifique-se de incorporá-las e segui-los fielmente no contrato gerado.
 
 Use tags HTML para estruturar o conteúdo (h1, h2, h3, p, ul, li, etc). NÃO inclua tags <html>, <head> ou <body>.
+IMPORTANTE: NÃO use formatação Markdown (como **texto**). Se precisar destacar algo, use as tags HTML apropriadas (como <strong>texto</strong>).
 Retorne APENAS o HTML do conteúdo do contrato, sem explicações adicionais.
 
 Informações do contrato:
@@ -50,6 +53,7 @@ O relatório deve seguir os padrões corporativos, com linguagem formal, dados o
 Se o usuário fornecer preferências, diretrizes de análise ou dados extras no campo "Sugestões/Informações Adicionais", certifique-se de incorporá-los e segui-los fielmente no relatório gerado.
 
 Use tags HTML para estruturar o conteúdo (h1, h2, h3, p, ul, li, table, etc). NÃO inclua tags <html>, <head> ou <body>.
+IMPORTANTE: NÃO use formatação Markdown (como **texto**). Se precisar destacar algo, use as tags HTML apropriadas (como <strong>texto</strong>).
 Retorne APENAS o HTML do conteúdo do relatório, sem explicações adicionais.
 
 Informações do relatório:
@@ -88,6 +92,10 @@ def generate_content(doc_type, user_data, image_paths=None):
                 text = text[7:]
             if text.endswith("```"):
                 text = text[:-3]
+            
+            # Remove possible Markdown formatting
+            text = re.sub(r'\*\*(.*?)\*\*', r'<strong>\1</strong>', text)
+            
             return text.strip()
         except Exception as e:
             # If Gemini fails, log or fall through to Ollama fallback
@@ -107,7 +115,12 @@ def generate_content(doc_type, user_data, image_paths=None):
 
         if response.status_code == 200:
             result = response.json()
-            return result.get("response", "")
+            text = result.get("response", "")
+            
+            # Remove possible Markdown formatting
+            text = re.sub(r'\*\*(.*?)\*\*', r'<strong>\1</strong>', text)
+            
+            return text.strip()
         else:
             raise Exception(f"Ollama error: {response.status_code} - {response.text}")
     except requests.exceptions.ConnectionError:
