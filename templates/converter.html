@@ -497,6 +497,40 @@
                 document.getElementById('splitRangeContainer').style.display = e.target.value === 'interval' ? 'block' : 'none';
             });
 
+            let draggedCard = null;
+
+            function setupDragAndDrop(card) {
+                card.addEventListener('dragstart', function(e) {
+                    draggedCard = this;
+                    setTimeout(() => this.classList.add('dragging'), 0);
+                });
+
+                card.addEventListener('dragend', function(e) {
+                    draggedCard = null;
+                    this.classList.remove('dragging');
+                });
+
+                card.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                });
+
+                card.addEventListener('dragenter', function(e) {
+                    e.preventDefault();
+                    if (this !== draggedCard && draggedCard) {
+                        const grid = document.getElementById('pagesGrid');
+                        const cards = Array.from(grid.querySelectorAll('.page-card'));
+                        const draggedIndex = cards.indexOf(draggedCard);
+                        const targetIndex = cards.indexOf(this);
+                        
+                        if (draggedIndex < targetIndex) {
+                            this.parentNode.insertBefore(draggedCard, this.nextSibling);
+                        } else {
+                            this.parentNode.insertBefore(draggedCard, this);
+                        }
+                    }
+                });
+            }
+
             function handleFileSelect(files) {
                 selectedFiles = Array.from(files);
                 if (selectedFiles.length === 0) return;

@@ -21,3 +21,6 @@ class Document(db.Model):
     title = db.Column(db.String(255), nullable=False)
     file_path = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __init__(self, user_id, type, title, file_path, **kwargs):
+        super().__init__(user_id=user_id, type=type, title=title, file_path=file_path, **kwargs)
