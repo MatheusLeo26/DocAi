@@ -14,7 +14,8 @@ def register():
     if User.query.filter_by(email=data['email']).first():
         return jsonify({'message': 'User already exists'}), 400
 
-    new_user = User(email=data['email'])
+    new_user = User()
+    new_user.email = data['email']
     new_user.set_password(data['password'])
     
     db.session.add(new_user)

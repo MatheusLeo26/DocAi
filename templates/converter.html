@@ -8,7 +8,124 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
     <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
     <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <style>
+        /* Page Organizer Styles */
+        .organizer-workspace {
+            display: none;
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2.5rem;
+            max-width: 900px;
+            width: 100%;
+            animation: fadeInUp 0.6s ease forwards;
+        }
+        .organizer-workspace.show {
+            display: block;
+        }
+        .organizer-header {
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 1rem;
+        }
+        .organizer-header h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        .organizer-header p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+        .pages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+            min-height: 200px;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            border: 1px dashed var(--glass-border);
+        }
+        .page-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 0.8rem;
+            text-align: center;
+            cursor: grab;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            user-select: none;
+        }
+        .page-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+        }
+        .page-card.dragging {
+            opacity: 0.4;
+            cursor: grabbing;
+            transform: scale(0.95);
+            border: 2px dashed var(--primary);
+        }
+        .page-card canvas {
+            width: 100%;
+            height: auto;
+            border-radius: 6px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+            background: white;
+            display: block;
+            margin-bottom: 0.8rem;
+        }
+        .page-badge {
+            background: var(--primary);
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            display: inline-block;
+        }
+        .organizer-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+        }
+        .btn-cancel {
+            background: var(--btn-sec-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-color);
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-cancel:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .btn-save {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            color: white;
+            padding: 0.8rem 1.8rem;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.2);
+        }
+        .btn-save:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+        }
+
         .converter-container {
             display: flex;
             min-height: 100vh;
@@ -139,6 +256,10 @@
             font-size: 0.95rem;
             outline: none;
         }
+        .form-group select option {
+            background: #1e293b;
+            color: #f8fafc;
+        }
         
         .convert-btn {
             width: 100%;
@@ -248,6 +369,20 @@
                     <button type="submit" class="convert-btn" id="convertBtn" disabled>Converter e Baixar</button>
                 </form>
             </div>
+
+            <div class="organizer-workspace" id="organizerWorkspace">
+                <div class="organizer-header">
+                    <h3>Reorganizar Páginas do PDF</h3>
+                    <p>Arraste e solte as páginas para reordená-las como preferir.</p>
+                </div>
+                <div class="pages-grid" id="pagesGrid">
+                    <!-- Miniaturas das páginas serão renderizadas aqui -->
+                </div>
+                <div class="organizer-actions">
+                    <button type="button" class="btn-cancel" id="cancelOrganizeBtn">Cancelar</button>
+                    <button type="button" class="btn-save" id="saveOrganizeBtn">Salvar e Baixar PDF</button>
+                </div>
+            </div>
         </main>
     </div>
 
@@ -275,8 +410,60 @@
             const loadingOverlay = document.getElementById('loadingOverlay');
 
             let selectedFile = null;
+            let draggedItem = null;
 
-            // Drag and drop events
+            function setupDragAndDrop(item) {
+                item.addEventListener('dragstart', (e) => {
+                    draggedItem = item;
+                    item.classList.add('dragging');
+                    e.dataTransfer.effectAllowed = 'move';
+                });
+
+                item.addEventListener('dragend', () => {
+                    if (draggedItem) {
+                        draggedItem.classList.remove('dragging');
+                    }
+                    draggedItem = null;
+                });
+
+                item.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                });
+
+                item.addEventListener('dragenter', (e) => {
+                    e.preventDefault();
+                });
+
+                item.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    if (draggedItem && draggedItem !== item) {
+                        const grid = document.getElementById('pagesGrid');
+                        const children = Array.from(grid.children);
+                        const draggedIndex = children.indexOf(draggedItem);
+                        const targetIndex = children.indexOf(item);
+                        
+                        if (draggedIndex < targetIndex) {
+                            grid.insertBefore(draggedItem, item.nextSibling);
+                        } else {
+                            grid.insertBefore(draggedItem, item);
+                        }
+                        updatePageBadges();
+                    }
+                });
+            }
+
+            function updatePageBadges() {
+                const cards = document.querySelectorAll('.page-card');
+                cards.forEach((card, idx) => {
+                    const badge = card.querySelector('.page-badge');
+                    if (badge) {
+                        badge.textContent = `Página ${idx + 1}`;
+                    }
+                });
+            }
+
+            // Drag and drop events for dropzone
             ['dragenter', 'dragover'].forEach(eventName => {
                 dropzone.addEventListener(eventName, (e) => {
                     e.preventDefault();
@@ -313,6 +500,15 @@
                 dropzone.style.display = 'block';
                 formatGroup.style.display = 'none';
                 convertBtn.disabled = true;
+                convertBtn.textContent = 'Converter e Baixar';
+            });
+
+            targetFormat.addEventListener('change', () => {
+                if (targetFormat.value === 'reorder') {
+                    convertBtn.textContent = 'Organizar Páginas';
+                } else {
+                    convertBtn.textContent = 'Converter e Baixar';
+                }
             });
 
             function handleFileSelect(file) {
@@ -322,6 +518,7 @@
                 fileInfo.classList.add('show');
                 dropzone.style.display = 'none';
                 convertBtn.disabled = false;
+                convertBtn.textContent = 'Converter e Baixar';
 
                 const ext = file.name.split('.').pop().toLowerCase();
                 targetFormat.innerHTML = '';
@@ -331,7 +528,10 @@
                     targetFormat.innerHTML = '<option value="pdf">PDF</option>';
                 } else if (ext === 'pdf') {
                     formatGroup.style.display = 'block';
-                    targetFormat.innerHTML = '<option value="pdfa">PDF/A</option>';
+                    targetFormat.innerHTML = `
+                        <option value="pdfa">PDF/A</option>
+                        <option value="reorder">Reorganizar Páginas</option>
+                    `;
                 } else if (['png', 'jpg', 'jpeg', 'jfif'].includes(ext)) {
                     formatGroup.style.display = 'block';
                     const options = ['PNG', 'JPG', 'JFIF'].filter(f => f.toLowerCase() !== ext && !(ext === 'jpeg' && f === 'JPG'));
@@ -348,6 +548,63 @@
                 if (!selectedFile) return;
 
                 const ext = selectedFile.name.split('.').pop().toLowerCase();
+                
+                if (ext === 'pdf' && targetFormat.value === 'reorder') {
+                    // Start page organizer workspace
+                    loadingOverlay.querySelector('.loading-text').textContent = 'Preparando páginas do PDF...';
+                    loadingOverlay.classList.add('show');
+                    
+                    const reader = new FileReader();
+                    reader.onload = async function() {
+                        const arrayBuffer = this.result;
+                        try {
+                            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+                            const pdf = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
+                            const numPages = pdf.numPages;
+                            const pagesGrid = document.getElementById('pagesGrid');
+                            pagesGrid.innerHTML = '';
+                            
+                            for (let i = 1; i <= numPages; i++) {
+                                const page = await pdf.getPage(i);
+                                const viewport = page.getViewport({scale: 0.3});
+                                const canvas = document.createElement('canvas');
+                                const context = canvas.getContext('2d');
+                                canvas.height = viewport.height;
+                                canvas.width = viewport.width;
+                                
+                                await page.render({
+                                    canvasContext: context,
+                                    viewport: viewport
+                                }).promise;
+                                
+                                const card = document.createElement('div');
+                                card.className = 'page-card';
+                                card.draggable = true;
+                                card.dataset.index = i - 1; // 0-based index
+                                
+                                const badge = document.createElement('div');
+                                badge.className = 'page-badge';
+                                badge.textContent = `Página ${i}`;
+                                
+                                card.appendChild(canvas);
+                                card.appendChild(badge);
+                                pagesGrid.appendChild(card);
+                                
+                                setupDragAndDrop(card);
+                            }
+                            
+                            document.querySelector('.converter-box').style.display = 'none';
+                            document.getElementById('organizerWorkspace').classList.add('show');
+                            loadingOverlay.classList.remove('show');
+                        } catch (err) {
+                            loadingOverlay.classList.remove('show');
+                            alert('Erro ao processar o arquivo PDF: ' + err.message);
+                        }
+                    };
+                    reader.readAsArrayBuffer(selectedFile);
+                    return;
+                }
+
                 const formData = new FormData();
                 formData.append('file', selectedFile);
 
@@ -388,6 +645,60 @@
                     }
                 } catch (err) {
                     loadingOverlay.classList.remove('show');
+                    alert('Erro na conexão: ' + err.message);
+                }
+            });
+
+            // Cancel and Save buttons for Organizer
+            document.getElementById('cancelOrganizeBtn').addEventListener('click', () => {
+                document.getElementById('organizerWorkspace').classList.remove('show');
+                document.querySelector('.converter-box').style.display = 'block';
+                targetFormat.value = 'pdfa';
+                convertBtn.textContent = 'Converter e Baixar';
+            });
+
+            document.getElementById('saveOrganizeBtn').addEventListener('click', async () => {
+                if (!selectedFile) return;
+                
+                const cards = document.querySelectorAll('.page-card');
+                const pageOrder = Array.from(cards).map(card => parseInt(card.dataset.index));
+                
+                const formData = new FormData();
+                formData.append('file', selectedFile);
+                formData.append('page_order', JSON.stringify(pageOrder));
+                
+                loadingOverlay.querySelector('.loading-text').textContent = 'Reorganizando páginas e gerando o novo PDF...';
+                loadingOverlay.classList.add('show');
+                
+                try {
+                    const res = await authFetch('/api/convert/reorder-pdf', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    loadingOverlay.classList.remove('show');
+                    loadingOverlay.querySelector('.loading-text').textContent = 'Convertendo seu arquivo...';
+                    
+                    if (!res) return;
+                    
+                    if (res.ok) {
+                        const blob = await res.blob();
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        const baseName = selectedFile.name.substring(0, selectedFile.name.lastIndexOf('.'));
+                        a.download = `${baseName}_organizado.pdf`;
+                        a.click();
+                        
+                        // Close workspace
+                        document.getElementById('cancelOrganizeBtn').click();
+                    } else {
+                        const err = await res.json();
+                        alert(err.message || 'Erro ao organizar páginas');
+                    }
+                } catch (err) {
+                    loadingOverlay.classList.remove('show');
+                    loadingOverlay.querySelector('.loading-text').textContent = 'Convertendo seu arquivo...';
                     alert('Erro na conexão: ' + err.message);
                 }
             });
