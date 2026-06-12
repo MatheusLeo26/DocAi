@@ -1,5 +1,4 @@
 import os
-import pythoncom
 from flask import current_app
 from docx import Document as DocxDocument
 from services.pdf_service import generate_pdf_sync
@@ -33,6 +32,7 @@ def convert_docx_to_pdf(input_path: str) -> str:
     output_path = os.path.join(output_dir, f"{base_name}.pdf")
 
     try:
+        import pythoncom
         from docx2pdf import convert
         # Initialize COM for the current thread (required by Flask/Werkzeug)
         pythoncom.CoInitialize()
