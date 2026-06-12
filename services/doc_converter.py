@@ -1,4 +1,5 @@
 import os
+import pythoncom
 from flask import current_app
 from docx import Document as DocxDocument
 from services.pdf_service import generate_pdf_sync
@@ -33,6 +34,8 @@ def convert_docx_to_pdf(input_path: str) -> str:
 
     try:
         from docx2pdf import convert
+        # Initialize COM for the current thread (required by Flask/Werkzeug)
+        pythoncom.CoInitialize()
         # Convert using MS Word to preserve all formatting and images
         convert(os.path.abspath(input_path), os.path.abspath(output_path))
         if os.path.exists(output_path):
