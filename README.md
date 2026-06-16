@@ -16,6 +16,10 @@ Gere documentos profissionais estruturados em segundos. O ecossistema envia dado
 *   **Contratos Empresariais (Contracts)**
 *   **Relatórios Corporativos (Reports)**
 
+### 👁 Visualização Nativa e Biblioteca
+*   **Biblioteca de Arquivos**: Gerencie seus documentos gerados (baixar ou excluir).
+*   **Pré-visualização**: Visualize os PDFs gerados diretamente na página da aplicação web através de um modal integrado, sem precisar fazer o download prévio do arquivo.
+
 ### 🔄 Conversor de Arquivos Inteligente
 Converta arquivos de forma local no servidor ou aplicativo móvel.
 *   **DOCX** ➔ **PDF** (mantendo cabeçalhos e formatações).

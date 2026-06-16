@@ -136,6 +136,22 @@ def download_document(doc_id):
     return send_file(doc.file_path, as_attachment=True, download_name=f"{doc.title}.pdf")
 
 
+@docs_bp.route('/view/<int:doc_id>', methods=['GET'])
+@jwt_required()
+def view_document(doc_id):
+    """View a generated PDF document without forcing download."""
+    user_id = get_jwt_identity()
+    doc = Document.query.filter_by(id=doc_id, user_id=int(user_id)).first()
+
+    if not doc:
+        return jsonify({'message': 'Documento não encontrado'}), 404
+
+    if not os.path.exists(doc.file_path):
+        return jsonify({'message': 'Arquivo não encontrado no servidor'}), 404
+
+    return send_file(doc.file_path, mimetype='application/pdf')
+
+
 @docs_bp.route('/delete/<int:doc_id>', methods=['DELETE'])
 @jwt_required()
 def delete_document(doc_id):

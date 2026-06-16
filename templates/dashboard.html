@@ -125,6 +125,50 @@
             border: 1px dashed rgba(255,255,255,0.08);
         }
 
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background-color: var(--glass-bg);
+            margin: 2% auto;
+            padding: 20px;
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            width: 80%;
+            height: 90vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .close-modal {
+            color: #aaa;
+            align-self: flex-end;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+        .close-modal:hover,
+        .close-modal:focus {
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        #pdfViewer {
+            width: 100%;
+            flex: 1;
+            border: none;
+            border-radius: 8px;
+        }
+
         @media (max-width: 768px) {
             .dashboard-container { flex-direction: column; }
             .sidebar {
@@ -211,7 +255,16 @@
                     <div class="empty-state">Nenhum relatório gerado ainda</div>
                 </div>
             </div>
+
         </main>
+    </div>
+
+    <!-- PDF Viewer Modal -->
+    <div id="pdfModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <iframe id="pdfViewer" src=""></iframe>
+        </div>
     </div>
 
     <script>
@@ -259,6 +312,7 @@
                         <span>${new Date(doc.created_at).toLocaleDateString('pt-BR')} às ${new Date(doc.created_at).toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})}</span>
                     </div>
                     <div class="doc-actions">
+                        <button onclick="viewDoc(${doc.id}, '${doc.title}')">👁 Visualizar</button>
                         <button onclick="downloadDoc(${doc.id}, '${doc.title}')">⬇ Baixar</button>
                         <button class="delete-btn" onclick="deleteDoc(${doc.id})">🗑 Excluir</button>
                     </div>
@@ -273,6 +327,29 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url; a.download = title + '.pdf'; a.click();
+        }
+
+        async function viewDoc(id, title) {
+            const res = await authFetch(`/api/docs/view/${id}`);
+            if (!res) return;
+            const blob = await res.blob();
+            const url = URL.createObjectURL(blob);
+            const viewer = document.getElementById('pdfViewer');
+            viewer.src = url;
+            document.getElementById('pdfModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('pdfModal').style.display = 'none';
+            document.getElementById('pdfViewer').src = '';
+        }
+
+        // Fechar o modal ao clicar fora dele
+        window.onclick = function(event) {
+            const modal = document.getElementById('pdfModal');
+            if (event.target == modal) {
+                closeModal();
+            }
         }
 
         async function deleteDoc(id) {
