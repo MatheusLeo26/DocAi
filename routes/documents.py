@@ -86,7 +86,7 @@ def generate_document():
                 'id': doc.id,
                 'type': doc.type,
                 'title': doc.title,
-                'created_at': doc.created_at.isoformat()
+                'created_at': doc.created_at.isoformat() + 'Z'
             }
         }), 201
 
@@ -115,7 +115,7 @@ def list_documents():
             'id': d.id,
             'type': d.type,
             'title': d.title,
-            'created_at': d.created_at.isoformat()
+            'created_at': d.created_at.isoformat() + 'Z'
         } for d in docs]
     }), 200
 

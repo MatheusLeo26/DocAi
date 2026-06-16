@@ -11,8 +11,8 @@ Este projeto é composto por:
 ## ✨ Funcionalidades
 
 ### 📑 Geração de Documentos por IA
-Gere documentos profissionais estruturados em segundos. O ecossistema envia dados brutos à IA local (Ollama) para a redação formal e gera PDFs diagramados via Playwright.
-*   **Currículos (Resumes)**
+Gere documentos profissionais estruturados em segundos. O ecossistema envia dados brutos à IA local (Ollama) ou Gemini para a redação formal e gera PDFs diagramados via Playwright.
+*   **Currículos (Resumes)**: Agora com **Filtro e Otimização Inteligente de Recrutamento (ATS/Recruiter Friendly)** que compacta o layout vertical, remove excesso de cursos de baixo impacto (limita às 4-5 certificações mais relevantes), agrupa habilidades em formato de tags categorizadas (sem repetir conteúdo da experiência) e prioriza a seção de projetos e portfólio no topo.
 *   **Contratos Empresariais (Contracts)**
 *   **Relatórios Corporativos (Reports)**
 

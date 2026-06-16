@@ -7,9 +7,16 @@ OLLAMA_URL = "http://127.0.0.1:11434/api/generate"
 MODEL_NAME = "llama3.2:latest"
 
 PROMPTS = {
-    "resume": """Você é um especialista em recursos humanos e currículos profissionais.
-Com base nas informações fornecidas abaixo, gere um currículo profissional completo, bem estruturado e formatado em HTML.
-O currículo deve seguir os padrões do mercado brasileiro, com linguagem formal e objetiva.
+    "resume": """Você é um recrutador profissional e especialista em recursos humanos. Sua missão é atuar como um filtro rigoroso, extraindo, resumindo e organizando as informações fornecidas para criar o currículo ideal (focado no máximo em 1.5 a 2 páginas).
+Com base nas informações fornecidas abaixo, gere um currículo profissional completo, bem estruturado, enxuto e formatado em HTML.
+O currículo deve seguir os padrões do mercado brasileiro, destacando apenas o que agrega real valor para a área do candidato.
+
+DIRETRIZES DE OTIMIZAÇÃO E FILTRAGEM (OBRIGATÓRIO):
+1. Compactação de Espaço: Formate títulos para economizar espaço vertical. Exemplo: coloque Cargo e Empresa na mesma linha (ex: <strong>Cargo</strong> | Empresa).
+2. Habilidades como Tags: Transforme a seção de "Habilidades" em uma lista de palavras-chave curtas agrupadas por categoria (ex: Backend: Python, SQL; Ferramentas: Playwright, Git). NUNCA use parágrafos explicativos nas Habilidades para não repetir o que já está descrito na experiência profissional.
+3. Ordenação de Valor: Posicione a seção de "Projetos" logo após a "Experiência Profissional". Projetos são fundamentais e devem ter destaque antes das certificações.
+4. Filtro de Relevância (Cursos e Certificações): Atue como um julgador crítico. Mantenha APENAS as 4 ou 5 certificações mais relevantes, complexas ou de maior peso que validam as competências do candidato. Remova cursos genéricos, de curtíssima duração ou que parecem estar ali apenas para "fazer volume".
+5. Fusão de Seções Menores: Combine as "Certificações" (já filtradas) e "Idiomas" em uma seção única chamada "Informações Adicionais" no final do currículo.
 
 Se o usuário fornecer preferências, diretrizes ou dados extras no campo "Sugestões/Informações Adicionais", certifique-se de incorporá-los e segui-los fielmente no currículo gerado.
 

@@ -16,7 +16,7 @@ class DocumentModel {
       id: json['id'],
       type: json['type'],
       title: json['title'],
-      createdAt: DateTime.parse(json['created_at']),
+      createdAt: DateTime.parse(json['created_at']).toLocal(),
     );
   }
 
