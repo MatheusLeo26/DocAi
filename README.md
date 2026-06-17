@@ -17,7 +17,7 @@ Gere documentos profissionais estruturados em segundos. O ecossistema envia dado
 *   **Relatórios Corporativos (Reports)**
 
 ### 👁 Visualização Nativa e Biblioteca
-*   **Biblioteca de Arquivos**: Gerencie seus documentos gerados (baixar ou excluir).
+*   **Biblioteca de Arquivos**: Gerencie seus documentos gerados (baixar ou excluir de forma dinâmica sem necessidade de recarregar a página, com interface SweetAlert2).
 *   **Pré-visualização**: Visualize os PDFs gerados diretamente na página da aplicação web através de um modal integrado, sem precisar fazer o download prévio do arquivo.
 
 ### 🔄 Conversor de Arquivos Inteligente
