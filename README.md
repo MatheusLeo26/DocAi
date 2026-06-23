@@ -106,5 +106,9 @@ Acesse a pasta `mobile/`:
 
 ---
 
-## 🔒 Segurança (JWT)
-Todas as operações de geração de documentos e listagem de biblioteca exigem autenticação do tipo `Bearer Token` fornecido no cabeçalho HTTP de cada requisição. O registro e login gerenciam os tokens automaticamente tanto na versão Web quanto Mobile.
+## 🔒 Segurança (JWT & Cookies)
+O ecossistema implementa boas práticas de segurança para o tráfego e armazenamento de credenciais de acordo com o cliente utilizado:
+
+*   **Versão Web (Navegador)**: A autenticação utiliza **Cookies HttpOnly e Secure** (`access_token_cookie`). Os tokens JWT de sessão não são expostos nem armazenados no `LocalStorage`, mitigando vulnerabilidades de roubo de sessão via XSS (Cross-Site Scripting).
+*   **Versão Mobile (Flutter)**: Utiliza autenticação do tipo `Bearer Token` fornecido no cabeçalho HTTP (`Authorization: Bearer <JWT>`) para as requisições REST, permitindo o armazenamento seguro local no dispositivo.
+*   **Segredos de Ambiente**: Credenciais sensíveis e chaves de API nunca ficam expostas no código client-side.
