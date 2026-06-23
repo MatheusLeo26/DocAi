@@ -37,8 +37,8 @@ def generate_document():
     if not doc_type or not user_data:
         return jsonify({'message': 'Tipo de documento e dados são obrigatórios'}), 400
 
-    if doc_type not in ['resume', 'contract', 'report']:
-        return jsonify({'message': 'Tipo inválido. Use: resume, contract ou report'}), 400
+    if doc_type not in ['resume', 'resume_en', 'resume_es', 'resume_modern', 'resume_modern_en', 'resume_modern_es', 'resume_minimalist', 'resume_minimalist_en', 'resume_minimalist_es', 'contract', 'report']:
+        return jsonify({'message': 'Tipo inválido. Use: resume, resume_en, resume_es, resume_modern, resume_modern_en, resume_modern_es, resume_minimalist, resume_minimalist_en, resume_minimalist_es, contract ou report'}), 400
 
     temp_image_paths = []
     try:

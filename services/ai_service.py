@@ -29,7 +29,7 @@ REGRAS OBRIGATÓRIAS PARA A SEÇÃO DE CONTATO:
    - Portfólio/Site: <i class="fas fa-globe"></i> <a href="URL_COMPLETA">URL_COMPLETA</a>
    - Cidade: <i class="fas fa-map-marker-alt"></i> Cidade - UF
 2. NUNCA encurte ou resuma links. Sempre exiba a URL COMPLETA e EXATA fornecida pelo usuário, tanto no texto visível do link quanto no atributo href.
-3. Todos os links devem ser clicáveis usando a tag <a> com target="_blank".
+3. Todos os links devem ser clicáveis usando la tag <a> com target="_blank".
 4. Organize a seção de contato horizontalmente ou em lista elegante logo abaixo do nome.
 
 Use tags HTML para estruturar o conteúdo (h1, h2, h3, p, ul, li, etc). NÃO inclua tags <html>, <head> ou <body>.
@@ -37,6 +37,38 @@ IMPORTANTE: NÃO use formatação Markdown (como **texto**). Se precisar destaca
 Retorne APENAS o HTML do conteúdo do currículo, sem explicações adicionais.
 
 Informações do candidato:
+{user_data}""",
+
+    "resume_es": """Usted es un reclutador profesional y experto en recursos humanos. Su misión es actuar como un filtro riguroso, extrayendo, resumiendo y organizando la información proporcionada para crear el currículum ideal (enfocado en un máximo de 1.5 a 2 páginas).
+Con base en la información proporcionada a continuación, genere un currículum profesional completo, bien estructurado, conciso y formateado en HTML EN ESPAÑOL.
+El currículum debe seguir los estándares del mercado internacional, destacando únicamente lo que aporta valor real para el área del candidato.
+
+DIRECTRICES DE OPTIMIZACIÓN Y FILTRADO (OBLIGATORIO):
+1. Compactación de espacio: Formatee los títulos para ahorrar espacio vertical. Ejemplo: coloque el Cargo y la Empresa en la misma línea (ej: <strong>Cargo</strong> | Empresa).
+2. Habilidades como etiquetas (tags): Transforme la sección de "Habilidades" en una lista de palabras clave cortas agrupadas por categoría (ej: Backend: Python, SQL; Herramientas: Playwright, Git). NUNCA use párrafos explicativos en las Habilidades para no repetir lo que ya está descrito en la experiencia profesional.
+3. Orden de valor: Posicione la sección de "Proyectos" justo después de "Experiencia profesional". Los proyectos son fundamentales y deben tener prioridad antes de las certificaciones.
+4. Filtro de relevancia (Cursos y Certificaciones): Actúe como un juez crítico. Mantenga ÚNICAMENTE las 4 o 5 certificaciones más relevantes, complejas o de mayor peso que validen las competencias del candidato. Elimine cursos genéricos, de muy corta duración o que parezcan estar allí solo para "hacer volumen".
+5. Fusión de secciones menores: Combine las "Certificaciones" (ya filtradas) e "Idiomas" en una sola sección llamada "Información adicional" al final del currículum.
+
+Si el usuario proporciona preferencias, directrices o datos adicionales en el campo "Sugerencias/Información adicional", asegúrese de incorporarlos y seguirlos fielmente en el currículum generado.
+
+REGLAS OBLIGATORIAS PARA LA SECCIÓN DE CONTACTO:
+1. Use iconos de FontAwesome antes de cada información de contacto. Ejemplos:
+   - Correo electrónico: <i class="fas fa-envelope"></i> correo@ejemplo.com
+   - Teléfono: <i class="fas fa-phone"></i> +55 11 99999-9999
+   - LinkedIn: <i class="fab fa-linkedin"></i> <a href="URL_COMPLETA">URL_COMPLETA</a>
+   - GitHub: <i class="fab fa-github"></i> <a href="URL_COMPLETA">URL_COMPLETA</a>
+   - Portfólio/Sitio: <i class="fas fa-globe"></i> <a href="URL_COMPLETA">URL_COMPLETA</a>
+   - Ciudad: <i class="fas fa-map-marker-alt"></i> Ciudad - Estado/País
+2. NUNCA acorte ni resuma los enlaces. Muestre siempre la URL COMPLETA y EXACTA proporcionada por el usuario, tanto en el texto visible del enlace como en el atributo href.
+3. Todos los enlaces deben ser cliqueables usando la etiqueta <a> con target="_blank".
+4. Organice la sección de contacto horizontalmente o en una lista elegante justo debajo del nombre.
+
+Use etiquetas HTML para estructurar el contenido (h1, h2, h3, p, ul, li, etc). NO incluya etiquetas <html>, <head> o <body>.
+IMPORTANTE: NO use formato Markdown (como **texto**). Si necesita resaltar algo, use las etiquetas HTML apropiadas (como <strong>texto</strong>).
+Devuelva ÚNICAMENTE el HTML del contenido del currículum, sin explicaciones adicionales. Todo el texto generado debe estar en español.
+
+Información del candidato:
 {user_data}""",
 
     "contract": """Você é um advogado especialista em contratos empresariais e civis.
@@ -64,12 +96,52 @@ IMPORTANTE: NÃO use formatação Markdown (como **texto**). Se precisar destaca
 Retorne APENAS o HTML do conteúdo do relatório, sem explicações adicionais.
 
 Informações do relatório:
+{user_data}""",
+
+    "resume_en": """You are a professional recruiter and human resources expert. Your mission is to act as a strict filter, extracting, summarizing, and organizing the provided information to create the ideal resume (focused on a maximum of 1.5 to 2 pages).
+Based on the information provided below, generate a complete, well-structured, lean, and HTML-formatted professional resume IN ENGLISH.
+The resume should follow international market standards, highlighting only what adds real value to the candidate's field.
+
+OPTIMIZATION AND FILTERING GUIDELINES (MANDATORY):
+1. Space Compaction: Format titles to save vertical space. Example: put Title and Company on the same line (e.g., <strong>Title</strong> | Company).
+2. Skills as Tags: Transform the "Skills" section into a list of short keywords grouped by category (e.g., Backend: Python, SQL; Tools: Playwright, Git). NEVER use explanatory paragraphs in Skills to avoid repeating what is already described in professional experience.
+3. Value Ordering: Position the "Projects" section right after "Professional Experience". Projects are fundamental and should have prominence before certifications.
+4. Relevance Filter (Courses and Certifications): Act as a critical judge. Keep ONLY the 4 or 5 most relevant, complex, or weighty certifications that validate the candidate's competencies. Remove generic, very short-duration courses or those that seem to be there just to "make volume".
+5. Fusion of Smaller Sections: Combine "Certifications" (already filtered) and "Languages" into a single section called "Additional Information" at the end of the resume.
+
+If the user provides preferences, guidelines, or extra data in the "Suggestions/Additional Information" field, be sure to incorporate and follow them faithfully in the generated resume.
+
+MANDATORY RULES FOR THE CONTACT SECTION:
+1. Use FontAwesome icons before each contact information. Examples:
+   - Email: <i class="fas fa-envelope"></i> email@example.com
+   - Phone: <i class="fas fa-phone"></i> +55 11 99999-9999
+   - LinkedIn: <i class="fab fa-linkedin"></i> <a href="FULL_URL">FULL_URL</a>
+   - GitHub: <i class="fab fa-github"></i> <a href="FULL_URL">FULL_URL</a>
+   - Portfolio/Website: <i class="fas fa-globe"></i> <a href="FULL_URL">FULL_URL</a>
+   - City: <i class="fas fa-map-marker-alt"></i> City - State/Country
+2. NEVER shorten or summarize links. Always display the EXACT FULL URL provided by the user, both in the visible link text and in the href attribute.
+3. All links must be clickable using the <a> tag with target="_blank".
+4. Organize the contact section horizontally or in an elegant list just below the name.
+
+Use HTML tags to structure the content (h1, h2, h3, p, ul, li, etc). DO NOT include <html>, <head> or <body> tags.
+IMPORTANT: DO NOT use Markdown formatting (like **text**). If you need to highlight something, use the appropriate HTML tags (like <strong>text</strong>).
+Return ONLY the HTML of the resume content, without additional explanations. All generated text must be in English.
+
+Candidate information:
 {user_data}"""
 }
 
 def generate_content(doc_type, user_data, image_paths=None):
     """Generate professional HTML content using Gemini API if configured, otherwise fallback to Ollama."""
-    prompt_template = PROMPTS.get(doc_type)
+    mapped_type = doc_type
+    if doc_type in ['resume_modern', 'resume_minimalist']:
+        mapped_type = 'resume'
+    elif doc_type in ['resume_modern_en', 'resume_minimalist_en']:
+        mapped_type = 'resume_en'
+    elif doc_type in ['resume_modern_es', 'resume_minimalist_es']:
+        mapped_type = 'resume_es'
+
+    prompt_template = PROMPTS.get(mapped_type)
     if not prompt_template:
         raise ValueError(f"Tipo de documento inválido: {doc_type}")
 

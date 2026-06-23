@@ -17,6 +17,8 @@ class _CreateDocumentScreenState extends State<CreateDocumentScreen> {
   final _dataController = TextEditingController();
   final List<File> _selectedImages = [];
   bool _isLoading = false;
+  String _selectedLanguage = 'pt';
+  String _selectedTemplate = 'classic';
 
   Future<void> _pickImages() async {
     final result = await FilePicker.platform.pickFiles(
@@ -65,8 +67,25 @@ class _CreateDocumentScreenState extends State<CreateDocumentScreen> {
       _isLoading = true;
     });
 
+    String finalDocType = widget.docType;
+    if (widget.docType == 'resume') {
+      if (_selectedTemplate == 'modern') {
+        if (_selectedLanguage == 'en') finalDocType = 'resume_modern_en';
+        else if (_selectedLanguage == 'es') finalDocType = 'resume_modern_es';
+        else finalDocType = 'resume_modern';
+      } else if (_selectedTemplate == 'minimalist') {
+        if (_selectedLanguage == 'en') finalDocType = 'resume_minimalist_en';
+        else if (_selectedLanguage == 'es') finalDocType = 'resume_minimalist_es';
+        else finalDocType = 'resume_minimalist';
+      } else {
+        if (_selectedLanguage == 'en') finalDocType = 'resume_en';
+        else if (_selectedLanguage == 'es') finalDocType = 'resume_es';
+        else finalDocType = 'resume';
+      }
+    }
+
     final success = await ApiService.generateDocument(
-      widget.docType,
+      finalDocType,
       _titleController.text.trim(),
       _dataController.text.trim(),
       images: _selectedImages,
@@ -136,6 +155,62 @@ class _CreateDocumentScreenState extends State<CreateDocumentScreen> {
                   ),
                   const SizedBox(height: 16),
                   
+                  if (widget.docType == 'resume') ...[
+                    const Text(
+                      'Idioma do Currículo',
+                      style: TextStyle(color: Colors.grey, fontSize: 14),
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: const Color(0xFF334155)),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          value: _selectedLanguage,
+                          dropdownColor: const Color(0xFF1E293B),
+                          isExpanded: true,
+                          icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
+                          style: const TextStyle(color: Colors.white),
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              _selectedLanguage = newValue!;
+                            });
+                          },
+                          items: const [
+                            DropdownMenuItem(value: 'pt', child: Text('Português')),
+                            DropdownMenuItem(value: 'en', child: Text('English')),
+                            DropdownMenuItem(value: 'es', child: Text('Español')),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Modelo de Currículo',
+                      style: TextStyle(color: Colors.grey, fontSize: 14),
+                    ),
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      height: 180,
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            _buildTemplateCard('classic', 'Clássico', 'Inter & Azul', 'classic_preview.png'),
+                            const SizedBox(width: 12),
+                            _buildTemplateCard('modern', 'Moderno', 'Poppins & Verde', 'modern_preview.png'),
+                            const SizedBox(width: 12),
+                            _buildTemplateCard('minimalist', 'Minimalista', 'Serif, sem ícones', 'minimalist_preview.png'),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+
                   // Title Input
                   TextField(
                     controller: _titleController,
@@ -267,6 +342,61 @@ class _CreateDocumentScreenState extends State<CreateDocumentScreen> {
                 ],
               ),
             ),
+    );
+  }
+
+  Widget _buildTemplateCard(String value, String title, String desc, String imageName) {
+    final isSelected = _selectedTemplate == value;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedTemplate = value;
+        });
+      },
+      child: Container(
+        width: 140,
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.blueAccent.withOpacity(0.1) : const Color(0xFF1E293B),
+          border: Border.all(
+            color: isSelected ? Colors.blueAccent : const Color(0xFF334155),
+            width: 2,
+          ),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        padding: const EdgeInsets.all(8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.network(
+                  '${ApiService.baseUrl}/static/images/$imageName',
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    color: const Color(0xFF334155),
+                    child: const Icon(Icons.description, color: Colors.grey),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              title,
+              style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 12),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 2),
+            Text(
+              desc,
+              style: const TextStyle(color: Colors.grey, fontSize: 10),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

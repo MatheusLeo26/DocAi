@@ -210,7 +210,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         leading: CircleAvatar(
                           backgroundColor: Colors.blueAccent.withOpacity(0.2),
                           child: Icon(
-                            doc.type == 'resume'
+                            doc.type.startsWith('resume')
                                 ? Icons.description
                                 : doc.type == 'contract'
                                     ? Icons.gavel

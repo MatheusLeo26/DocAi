@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from models import User
 from extensions import db
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, set_access_cookies, unset_jwt_cookies
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -35,4 +35,12 @@ def login():
         return jsonify({'message': 'Invalid email or password'}), 401
 
     access_token = create_access_token(identity=str(user.id))
-    return jsonify({'access_token': access_token, 'user_id': user.id}), 200
+    response = jsonify({'message': 'Login successful', 'user_id': user.id})
+    set_access_cookies(response, access_token)
+    return response, 200
+
+@auth_bp.route('/logout', methods=['POST'])
+def logout():
+    response = jsonify({'message': 'Logout successful'})
+    unset_jwt_cookies(response)
+    return response, 200
