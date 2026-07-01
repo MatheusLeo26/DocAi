@@ -5,35 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DocAI - Gerador de Documentos com IA</title>
     <meta name="description" content="Gere currículos, contratos e relatórios profissionais em segundos com inteligência artificial. Converta arquivos com facilidade.">
-<style>
-html { background: #0f172a; }
-</style>
-<script>
-(function(){
-  var theme = localStorage.getItem('theme') || 'light';
-  if (theme === 'dark'){
-    document.documentElement.setAttribute('data-theme','dark');
-  }
-})();
-</script>
-<meta name="theme-color" content="#0f172a">
-<style>
-html { background: #0f172a; }
-</style>
-<script>
-(function(){
-  var theme = localStorage.getItem('theme') || 'light';
-  if (theme === 'dark'){
-    document.documentElement.setAttribute('data-theme','dark');
-  }
-})();
-</script>
-<meta name="theme-color" content="#0f172a">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
-<script src="{{ url_for('static', filename='js/theme.js') }}"></script>
-<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- Critical CSS for instant dark background render -->
+    <style>
+        html, body {
+            background-color: #0f172a !important;
+            color: #f8fafc !important;
+        }
+    </style>
+
+    <!-- Blocking Script to apply stored light theme before render if necessary -->
+    <script>
+        (function() {
+            var savedTheme = localStorage.getItem('theme') || 'dark';
+            if (savedTheme === 'light') {
+                document.documentElement.setAttribute('data-theme', 'light');
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+            }
+        })();
+    </script>
+    <meta name="theme-color" content="#0f172a">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
     <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
     <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

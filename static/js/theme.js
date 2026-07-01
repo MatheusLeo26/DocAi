@@ -3,14 +3,27 @@
 document.addEventListener('DOMContentLoaded', () => {
   const toggleBtn = document.getElementById('themeToggle');
   const savedTheme = localStorage.getItem('theme') || 'dark';
-  document.documentElement.setAttribute('data-theme', savedTheme);
+  
+  if (savedTheme === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+  }
+
   if (toggleBtn) {
-    toggleBtn.textContent = savedTheme === 'dark' ? 'Modo Claro' : 'Modo Escuro';
+    toggleBtn.textContent = savedTheme === 'light' ? 'Modo Escuro' : 'Modo Claro';
     toggleBtn.addEventListener('click', () => {
-      const newTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', newTheme);
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+      const newTheme = isLight ? 'dark' : 'light';
+      
+      if (newTheme === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+      }
+      
       localStorage.setItem('theme', newTheme);
-      toggleBtn.textContent = newTheme === 'dark' ? 'Modo Claro' : 'Modo Escuro';
+      toggleBtn.textContent = newTheme === 'light' ? 'Modo Escuro' : 'Modo Claro';
     });
   }
 });

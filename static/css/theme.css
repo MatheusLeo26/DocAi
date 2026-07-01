@@ -2,24 +2,6 @@
 @import url('style.css');
 
 :root {
-  --bg-color: #f8fafc;
-  --text-color: #0f172a;
-  --text-muted: #475569;
-  --glass-bg: rgba(255, 255, 255, 0.65);
-  --glass-border: rgba(148, 163, 184, 0.2);
-  --primary: #2563eb;
-  --secondary: #4f46e5;
-  --card-text: #0f172a;
-  --nav-text: #475569;
-  --nav-active-bg: rgba(37, 99, 235, 0.1);
-  --nav-active-color: #2563eb;
-  --btn-sec-bg: rgba(0, 0, 0, 0.05);
-  --btn-sec-text: #0f172a;
-  --title-color: #0f172a;
-  --border-style: 1px solid var(--glass-border);
-}
-
-[data-theme="dark"] {
   --bg-color: #0f172a;
   --text-color: #f8fafc;
   --text-muted: #94a3b8;
@@ -34,6 +16,24 @@
   --btn-sec-bg: rgba(255, 255, 255, 0.05);
   --btn-sec-text: #ffffff;
   --title-color: #e2e8f0;
+  --border-style: 1px solid var(--glass-border);
+}
+
+[data-theme="light"] {
+  --bg-color: #f8fafc;
+  --text-color: #0f172a;
+  --text-muted: #475569;
+  --glass-bg: rgba(255, 255, 255, 0.65);
+  --glass-border: rgba(148, 163, 184, 0.2);
+  --primary: #2563eb;
+  --secondary: #4f46e5;
+  --card-text: #0f172a;
+  --nav-text: #475569;
+  --nav-active-bg: rgba(37, 99, 235, 0.1);
+  --nav-active-color: #2563eb;
+  --btn-sec-bg: rgba(0, 0, 0, 0.05);
+  --btn-sec-text: #0f172a;
+  --title-color: #0f172a;
 }
 
 body {
