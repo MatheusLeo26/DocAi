@@ -9,6 +9,7 @@ async function authFetch(url, options = {}) {
 
     if (res.status === 401) {
         alert('Sua sessão expirou. Faça login novamente.');
+        localStorage.removeItem('token');
         window.location.href = '/login';
         return null;
     }

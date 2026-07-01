@@ -91,6 +91,8 @@
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
     <script>
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -106,6 +108,7 @@
                 const data = await res.json();
                 
                 if (res.ok) {
+                    localStorage.setItem('token', data.token);
                     window.location.href = '/dashboard';
                 } else {
                     alert(data.message || 'Erro ao fazer login');

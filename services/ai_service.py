@@ -72,15 +72,20 @@ Información del candidato:
 {user_data}""",
 
     "contract": """Você é um advogado especialista em contratos empresariais e civis.
-Com base nas informações fornecidas abaixo, gere um contrato profissional completo, bem estruturado e formatado em HTML.
-O contrato deve seguir os padrões legais brasileiros, com cláusulas claras e linguagem jurídica adequada.
-Inclua todas as cláusulas essenciais: objeto, obrigações das partes, prazo, valor, rescisão, foro, etc.
+Com base nas informações altamente estruturadas fornecidas abaixo, gere um contrato profissional completo, robusto, bem estruturado e formatado em HTML.
+O contrato deve seguir os padrões legais brasileiros, com linguagem jurídica adequada.
 
-Se o usuário fornecer preferências, cláusulas específicas ou diretrizes extras no campo "Sugestões/Informações Adicionais", certifique-se de incorporá-las e segui-los fielmente no contrato gerado.
+DIRETRIZES OBRIGATÓRIAS:
+1. Siga exatamente o "Modelo de Contrato" especificado no topo das informações (ex: Prestação de Serviços, CLT, Freelancer, Sociedade).
+2. Utilize PRECISAMENTE os dados de Contratante e Contratada fornecidos. Se uma parte for Pessoa Jurídica (PJ), insira os dados do Representante Legal e seu cargo na qualificação das partes. NÃO invente nomes ou documentos.
+3. Se um "Foro de Eleição" for fornecido, crie a cláusula de Foro especificando essa cidade para dirimir quaisquer disputas judiciais.
+4. ATENÇÃO ÀS CLÁUSULAS PADRONIZADAS: Se existirem "Cláusulas Padronizadas Selecionadas" nas informações (como Multa, IPCA, IGP-M, Non-compete, NDA), você DEVE redigir parágrafos jurídicos detalhados incorporando cada uma delas no corpo do contrato.
+5. DETECÇÃO DE PEJOTIZAÇÃO (MITIGAÇÃO DE RISCO TRABALHISTA): Se você detectar que o contrato estabelece uma relação de prestação de serviços ou freelancer com características que possam assemelhar-se a um emprego tradicional (habitualidade, subordinação, dependência econômica) ou se a parte contratada for explicitamente qualificada como MEI (Microempreendedor Individual) ou Pessoa Física autônoma, você DEVE incluir automaticamente uma cláusula/seção robusta de "Declaração de Autonomia e Termo de Responsabilidade/Indenização Trabalhista". Esta cláusula deve isentar a Contratante de qualquer responsabilidade previdenciária ou trabalhista e estabelecer direito de regresso absoluto contra a Contratada caso a Contratante seja acionada na Justiça do Trabalho.
+6. Incorpore também quaisquer orientações de "Sugestões Adicionais".
 
 Use tags HTML para estruturar o conteúdo (h1, h2, h3, p, ul, li, etc). NÃO inclua tags <html>, <head> ou <body>.
 IMPORTANTE: NÃO use formatação Markdown (como **texto**). Se precisar destacar algo, use as tags HTML apropriadas (como <strong>texto</strong>).
-Retorne APENAS o HTML do conteúdo do contrato, sem explicações adicionais.
+Retorne APENAS o HTML do conteúdo do contrato pronto para impressão, sem explicações adicionais.
 
 Informações do contrato:
 {user_data}""",

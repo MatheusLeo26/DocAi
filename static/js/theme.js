@@ -2,7 +2,7 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   const toggleBtn = document.getElementById('themeToggle');
-  const savedTheme = localStorage.getItem('theme') || 'light';
+  const savedTheme = localStorage.getItem('theme') || 'dark';
   document.documentElement.setAttribute('data-theme', savedTheme);
   if (toggleBtn) {
     toggleBtn.textContent = savedTheme === 'dark' ? 'Modo Claro' : 'Modo Escuro';

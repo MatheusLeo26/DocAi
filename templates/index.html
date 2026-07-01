@@ -5,9 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DocAI - Gerador de Documentos com IA</title>
     <meta name="description" content="Gere currículos, contratos e relatórios profissionais em segundos com inteligência artificial. Converta arquivos com facilidade.">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+<style>
+html { background: #0f172a; }
+</style>
+<script>
+(function(){
+  var theme = localStorage.getItem('theme') || 'light';
+  if (theme === 'dark'){
+    document.documentElement.setAttribute('data-theme','dark');
+  }
+})();
+</script>
+<meta name="theme-color" content="#0f172a">
+<style>
+html { background: #0f172a; }
+</style>
+<script>
+(function(){
+  var theme = localStorage.getItem('theme') || 'light';
+  if (theme === 'dark'){
+    document.documentElement.setAttribute('data-theme','dark');
+  }
+})();
+</script>
+<meta name="theme-color" content="#0f172a">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+<script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         /* Features Section */
         .features {
@@ -76,6 +105,7 @@
             font-weight: 800;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             min-width: 50px;
         }
@@ -190,6 +220,9 @@
         <p>© 2026 DocAI. Documentos profissionais gerados com Inteligência Artificial.</p>
     </footer>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>

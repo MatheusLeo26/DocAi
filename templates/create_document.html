@@ -82,7 +82,7 @@
         .form-group input,
         .form-group textarea {
             width: 100%;
-            padding: 0.85rem 1rem;
+            padding: 0.95rem 1.25rem;
             border-radius: 12px;
             border: 1px solid var(--glass-border);
             background: rgba(0, 0, 0, 0.25);
@@ -110,12 +110,21 @@
         .contact-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 1rem;
+            gap: 1.25rem;
+            margin-bottom: 1.25rem;
+        }
+        .three-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1.5fr;
+            gap: 1.25rem;
+            margin-bottom: 1.25rem;
         }
         @media (max-width: 768px) {
             .contact-grid { grid-template-columns: 1fr; }
+            .three-grid { grid-template-columns: 1fr; }
         }
-        .contact-grid .form-group { margin-bottom: 0; }
+        .contact-grid .form-group,
+        .three-grid .form-group { margin-bottom: 0; }
         .contact-grid .input-icon-wrapper {
             position: relative;
         }
@@ -295,14 +304,71 @@
         }
 
         /* Visual template selector */
+        .contract-selector { margin-bottom: 1.5rem; }
+        .contract-selector-header {
+            display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap;
+        }
+        .contract-search {
+            flex: 1; min-width: 180px; padding: 0.6rem 1rem 0.6rem 2.5rem;
+            border-radius: 10px; border: 1px solid var(--glass-border);
+            background: rgba(0,0,0,0.25); color: white; font-size: 0.85rem;
+            outline: none; transition: border-color 0.3s;
+        }
+        .contract-search:focus { border-color: var(--primary); }
+        .contract-search-wrapper {
+            position: relative; flex: 1; min-width: 180px;
+        }
+        .contract-search-wrapper i {
+            position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+            color: #64748b; font-size: 0.85rem;
+        }
+        .category-tabs {
+            display: flex; gap: 0.4rem; overflow-x: auto; padding-bottom: 0.5rem;
+            scrollbar-width: none;
+        }
+        .category-tabs::-webkit-scrollbar { display: none; }
+        .category-tab {
+            padding: 0.45rem 1rem; border-radius: 20px; font-size: 0.8rem;
+            border: 1px solid var(--glass-border); background: transparent;
+            color: #94a3b8; cursor: pointer; white-space: nowrap;
+            transition: all 0.25s ease; font-family: 'Inter', sans-serif;
+        }
+        .category-tab:hover { border-color: var(--primary); color: #cbd5e1; }
+        .category-tab.active {
+            background: rgba(59,130,246,0.15); border-color: var(--primary);
+            color: white; font-weight: 600;
+        }
+        .favorites-section {
+            margin-bottom: 1rem; padding: 0.75rem 1rem;
+            background: rgba(250,204,21,0.05); border: 1px dashed rgba(250,204,21,0.3);
+            border-radius: 12px; display: none;
+        }
+        .favorites-section.has-favorites { display: block; }
+        .favorites-section h5 {
+            margin: 0 0 0.5rem; color: #facc15; font-size: 0.8rem; font-weight: 600;
+        }
+        .favorites-grid {
+            display: flex; gap: 0.5rem; flex-wrap: wrap;
+        }
+        .fav-chip {
+            padding: 0.35rem 0.85rem; border-radius: 16px; font-size: 0.75rem;
+            background: rgba(250,204,21,0.1); border: 1px solid rgba(250,204,21,0.25);
+            color: #fde68a; cursor: pointer; transition: all 0.2s;
+        }
+        .fav-chip:hover { background: rgba(250,204,21,0.2); }
+        .fav-chip.active { background: rgba(59,130,246,0.15); border-color: var(--primary); color: white; }
         .template-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.25rem;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 1rem;
             margin-top: 0.5rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 0.5rem;
         }
         @media (max-width: 640px) {
+            .template-grid { grid-template-columns: 1fr 1fr; }
+            .category-tabs { gap: 0.3rem; }
+        }
+        @media (max-width: 400px) {
             .template-grid { grid-template-columns: 1fr; }
         }
         .template-card {
@@ -316,7 +382,9 @@
             flex-direction: column;
             align-items: center;
             text-align: center;
+            position: relative;
         }
+        .template-card.hidden { display: none; }
         .template-card:hover {
             border-color: var(--primary);
             transform: translateY(-2px);
@@ -326,6 +394,16 @@
             background: rgba(59, 130, 246, 0.1);
             box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
         }
+        .template-card .fav-star {
+            position: absolute; top: 6px; right: 8px; font-size: 0.85rem;
+            color: #475569; cursor: pointer; transition: all 0.2s;
+            z-index: 2; line-height: 1;
+        }
+        .template-card .fav-star:hover { color: #facc15; transform: scale(1.2); }
+        .template-card .fav-star.starred { color: #facc15; }
+        .template-card .card-emoji {
+            font-size: 1.6rem; margin-bottom: 0.3rem;
+        }
         .template-preview {
             width: 100%;
             height: 150px;
@@ -333,20 +411,78 @@
             border-radius: 10px;
             margin-bottom: 0.75rem;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            background: white; /* Ensure mockup displays clearly */
+            background: white;
         }
         .template-card h4 {
-            font-size: 0.95rem;
+            font-size: 0.85rem;
             font-weight: 600;
             color: white;
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.2rem;
         }
         .template-card p {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: #94a3b8;
             margin: 0;
             line-height: 1.3;
         }
+    
+        /* Preview Modal CSS */
+        .preview-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .preview-modal.show { display: flex; }
+        .preview-content {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2.5rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            color: white;
+        }
+        .preview-content h3 { margin-top: 0; margin-bottom: 1.5rem; color: #e2e8f0; }
+        .preview-text {
+            background: rgba(0,0,0,0.3);
+            padding: 1rem;
+            border-radius: 12px;
+            white-space: pre-wrap;
+            font-size: 0.9rem;
+            color: #cbd5e1;
+            margin-bottom: 1.5rem;
+            font-family: monospace;
+        }
+        .preview-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+        .btn-cancel {
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: transparent;
+            color: white;
+            cursor: pointer;
+        }
+        .btn-confirm {
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
     </style>
 </head>
 <body>
@@ -504,30 +640,304 @@
             <div class="form-section" id="form-contract" style="display: none;">
                 <h3>📋 Informações do Contrato</h3>
                 <form id="contractForm">
+                    <div class="contract-selector">
+                        <label style="margin-bottom: 0.75rem; display:block;">Modelo Base do Contrato</label>
+                        <input type="hidden" id="contract-template" value="prestacao">
+                        
+                        <!-- Search -->
+                        <div class="contract-selector-header">
+                            <div class="contract-search-wrapper">
+                                <i class="fas fa-search"></i>
+                                <input type="text" class="contract-search" id="contractSearch" placeholder="Buscar modelo..." oninput="filterContractModels()">
+                            </div>
+                        </div>
+
+                        <!-- Category Tabs -->
+                        <div class="category-tabs" id="categoryTabs">
+                            <button type="button" class="category-tab active" data-category="all" onclick="filterByCategory('all', this)">Todos</button>
+                            <button type="button" class="category-tab" data-category="trabalho" onclick="filterByCategory('trabalho', this)">Trabalho</button>
+                            <button type="button" class="category-tab" data-category="comercial" onclick="filterByCategory('comercial', this)">Comercial</button>
+                            <button type="button" class="category-tab" data-category="imobiliario" onclick="filterByCategory('imobiliario', this)">Imobiliário</button>
+                            <button type="button" class="category-tab" data-category="lgpd" onclick="filterByCategory('lgpd', this)">LGPD / Jurídico</button>
+                        </div>
+
+                        <!-- Favorites -->
+                        <div class="favorites-section" id="favoritesSection">
+                            <h5>⭐ Favoritos</h5>
+                            <div class="favorites-grid" id="favoritesGrid"></div>
+                        </div>
+
+                        <!-- Cards Grid -->
+                        <div class="template-grid" id="contractTemplateGrid">
+                            <!-- Trabalho -->
+                            <div class="template-card active" data-template="prestacao" data-category="trabalho" data-name="Prestação de Serviços" onclick="selectContractTemplate(this)">
+                                <span class="fav-star" onclick="event.stopPropagation(); toggleFavorite(this)">☆</span>
+                                <span class="card-emoji">📄</span>
+                                <h4>Prestação de Serviços</h4>
+                                <p>Entregas e prazos</p>
+                            </div>
+                            <div class="template-card" data-template="clt" data-category="trabalho" data-name="Trabalho CLT" onclick="selectContractTemplate(this)">
+                                <span class="fav-star" onclick="event.stopPropagation(); toggleFavorite(this)">☆</span>
+                                <span class="card-emoji">👔</span>
+                                <h4>Trabalho CLT</h4>
+                                <p>Padrão trabalhista</p>
+                            </div>
+                            <div class="template-card" data-template="freelancer" data-category="trabalho" data-name="Freelancer" onclick="selectContractTemplate(this)">
+                                <span class="fav-star" onclick="event.stopPropagation(); toggleFavorite(this)">☆</span>
+                                <span class="card-emoji">💻</span>
+                                <h4>Freelancer</h4>
+                                <p>Autônomo / PJ</p>
+                            </div>
+                            <!-- Comercial -->
+                            <div class="template-card" data-template="sociedade" data-category="comercial" data-name="Sociedade / Quotas" onclick="selectContractTemplate(this)">
+                                <span class="fav-star" onclick="event.stopPropagation(); toggleFavorite(this)">☆</span>
+                                <span class="card-emoji">🤝</span>
+                                <h4>Sociedade / Quotas</h4>
+                                <p>Participação societária</p>
+                            </div>
+                            <div class="template-card" data-template="compra_venda" data-category="comercial" data-name="Compra e Venda" onclick="selectContractTemplate(this)">
+                                <span class="fav-star" onclick="event.stopPropagation(); toggleFavorite(this)">☆</span>
+                                <span class="card-emoji">🛒</span>
+                                <h4>Compra e Venda</h4>
+                                <p>Bens móveis</p>
+                            </div>
+                            <!-- Imobiliário -->
+                            <div class="template-card" data-template="locacao" data-category="imobiliario" data-name="Contrato de Locação" onclick="selectContractTemplate(this)">
+                                <span class="fav-star" onclick="event.stopPropagation(); toggleFavorite(this)">☆</span>
+                                <span class="card-emoji">🏠</span>
+                                <h4>Contrato de Locação</h4>
+                                <p>Imóvel residencial/comercial</p>
+                            </div>
+                            <!-- LGPD / Jurídico -->
+                            <div class="template-card" data-template="nda" data-category="lgpd" data-name="NDA Confidencialidade" onclick="selectContractTemplate(this)">
+                                <span class="fav-star" onclick="event.stopPropagation(); toggleFavorite(this)">☆</span>
+                                <span class="card-emoji">🔒</span>
+                                <h4>NDA</h4>
+                                <p>Acordo de Confidencialidade</p>
+                            </div>
+                            <div class="template-card" data-template="termos_lgpd" data-category="lgpd" data-name="Termos de Uso LGPD" onclick="selectContractTemplate(this)">
+                                <span class="fav-star" onclick="event.stopPropagation(); toggleFavorite(this)">☆</span>
+                                <span class="card-emoji">🛡️</span>
+                                <h4>Termos de Uso / LGPD</h4>
+                                <p>Conformidade legal</p>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="form-group">
                         <label>Título do documento</label>
                         <input type="text" id="contract-title" placeholder="Ex: Contrato de Prestação de Serviços" required>
                     </div>
-                    <div class="form-group">
-                        <label>Tipo de contrato</label>
-                        <input type="text" id="contract-type" placeholder="Ex: Prestação de Serviços, Compra e Venda, Aluguel, Trabalho CLT, Freelancer">
+
+                    <!-- Dynamic contract fields container -->
+                    <div id="contract-standard-fields">
+                    <!-- Contratante -->
+                    <div style="background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid var(--glass-border);">
+                        <h4 style="margin-top:0; color: #e2e8f0; margin-bottom: 1rem;">Dados da Parte Contratante</h4>
+                        <div class="form-group" style="display:flex; gap: 1rem; align-items:center;">
+                            <label><input type="radio" name="contract-party1-type" value="pf" checked onchange="togglePJ('party1', false)"> Pessoa Física</label>
+                            <label><input type="radio" name="contract-party1-type" value="pj" onchange="togglePJ('party1', true)"> Pessoa Jurídica</label>
+                        </div>
+                        <div class="form-group"><input type="text" id="contract-party1-name" placeholder="Nome ou Razão Social" required></div>
+                        <div class="contact-grid">
+                            <div class="form-group"><input type="text" id="contract-party1-doc1" placeholder="CPF ou CNPJ" required></div>
+                            <div class="form-group"><input type="text" id="contract-party1-doc2" placeholder="RG ou IE" required></div>
+                        </div>
+                        <div class="form-group"><input type="text" id="contract-party1-email" placeholder="E-mail"></div>
+                        <div class="form-group"><input type="text" id="contract-party1-address" placeholder="Endereço Completo"></div>
+                        <div class="three-grid">
+                            <div class="form-group"><input type="text" id="contract-party1-city" placeholder="Cidade"></div>
+                            <div class="form-group"><input type="text" id="contract-party1-state" placeholder="Estado (UF)"></div>
+                            <div class="form-group"><input type="text" id="contract-party1-zip" placeholder="CEP"></div>
+                        </div>
+                        <div id="party1-pj-fields" style="display:none; margin-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem;">
+                            <label style="color:#cbd5e1; font-weight:600; display:block; margin-bottom: 0.5rem;">Representante Legal</label>
+                            <div class="contact-grid">
+                                <div class="form-group"><input type="text" id="contract-party1-rep-name" placeholder="Nome do Representante"></div>
+                                <div class="form-group"><input type="text" id="contract-party1-rep-role" placeholder="Cargo"></div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label>Dados da Parte Contratante</label>
-                        <textarea id="contract-party1" placeholder="Nome/Razão Social, CPF/CNPJ, endereço completo"></textarea>
+
+                    <!-- Contratado -->
+                    <div style="background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid var(--glass-border);">
+                        <h4 style="margin-top:0; color: #e2e8f0; margin-bottom: 1rem;">Dados da Parte Contratada</h4>
+                        <div class="form-group" style="display:flex; gap: 1rem; align-items:center;">
+                            <label><input type="radio" name="contract-party2-type" value="pf" checked onchange="togglePJ('party2', false)"> Pessoa Física</label>
+                            <label><input type="radio" name="contract-party2-type" value="pj" onchange="togglePJ('party2', true)"> Pessoa Jurídica</label>
+                        </div>
+                        <div class="form-group"><input type="text" id="contract-party2-name" placeholder="Nome ou Razão Social" required></div>
+                        <div class="contact-grid">
+                            <div class="form-group"><input type="text" id="contract-party2-doc1" placeholder="CPF ou CNPJ" required></div>
+                            <div class="form-group"><input type="text" id="contract-party2-doc2" placeholder="RG ou IE" required></div>
+                        </div>
+                        <div class="form-group"><input type="text" id="contract-party2-email" placeholder="E-mail"></div>
+                        <div class="form-group"><input type="text" id="contract-party2-address" placeholder="Endereço Completo"></div>
+                        <div class="three-grid">
+                            <div class="form-group"><input type="text" id="contract-party2-city" placeholder="Cidade"></div>
+                            <div class="form-group"><input type="text" id="contract-party2-state" placeholder="Estado (UF)"></div>
+                            <div class="form-group"><input type="text" id="contract-party2-zip" placeholder="CEP"></div>
+                        </div>
+                        <div id="party2-pj-fields" style="display:none; margin-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem;">
+                            <label style="color:#cbd5e1; font-weight:600; display:block; margin-bottom: 0.5rem;">Representante Legal</label>
+                            <div class="contact-grid">
+                                <div class="form-group"><input type="text" id="contract-party2-rep-name" placeholder="Nome do Representante"></div>
+                                <div class="form-group"><input type="text" id="contract-party2-rep-role" placeholder="Cargo"></div>
+                            </div>
+                        </div>
                     </div>
+
+                    <!-- Objeto, Foro e Cláusulas -->
                     <div class="form-group">
-                        <label>Dados da Parte Contratada</label>
-                        <textarea id="contract-party2" placeholder="Nome/Razão Social, CPF/CNPJ, endereço completo"></textarea>
+                        <label>Foro de Eleição (Cidade onde eventuais disputas ocorrerão)</label>
+                        <input type="text" id="contract-foro" placeholder="Ex: São Paulo - SP">
                     </div>
                     <div class="form-group">
                         <label>Objeto e condições do contrato</label>
                         <textarea id="contract-object" placeholder="Descreva o que será contratado, prazos, valores, formas de pagamento e quaisquer condições especiais."></textarea>
-                        <div class="hint">Quanto mais detalhes, melhor a IA consegue gerar um contrato completo e preciso.</div>
                     </div>
+
+                    <div class="form-group" style="background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid var(--glass-border);">
+                        <label style="color:#cbd5e1; font-weight:600; margin-bottom: 1rem; display:block;">Cláusulas Padronizadas</label>
+                        <div style="display:flex; flex-direction:column; gap:0.75rem; color:#94a3b8; font-size:0.95rem;">
+                            
+                            <!-- Multa -->
+                            <div>
+                                <label style="display:flex; align-items:flex-start; gap:0.75rem; cursor:pointer; width:100%; text-align:left;">
+                                    <input type="checkbox" class="contract-clause" data-sub="clause-param-multa" onchange="toggleClauseSubInput(this, 'clause-param-multa')" style="width:auto; margin-top:0.25rem; flex-shrink:0;" value="Multa por rescisão antecipada">
+                                    <span style="flex:1;">Multa por rescisão antecipada</span>
+                                </label>
+                                <div id="clause-param-multa" style="display:none; margin-left:2rem; margin-top:0.5rem;">
+                                    <input type="text" placeholder="Qual o valor/regra da multa? Ex: Equivalente a 3 parcelas" style="width:100%; padding:0.6rem 0.9rem; font-size:0.85rem; border-radius:8px; border:1px solid var(--glass-border); background:rgba(0,0,0,0.25); color:white; outline:none;">
+                                </div>
+                            </div>
+
+                            <!-- IPCA -->
+                            <div>
+                                <label style="display:flex; align-items:flex-start; gap:0.75rem; cursor:pointer; width:100%; text-align:left;">
+                                    <input type="checkbox" class="contract-clause" data-sub="clause-param-ipca" onchange="toggleClauseSubInput(this, 'clause-param-ipca')" style="width:auto; margin-top:0.25rem; flex-shrink:0;" value="Índice de reajuste: IPCA">
+                                    <span style="flex:1;">Índice de reajuste: IPCA</span>
+                                </label>
+                                <div id="clause-param-ipca" style="display:none; margin-left:2rem; margin-top:0.5rem;">
+                                    <input type="text" placeholder="Qual a periodicidade? Ex: A cada 12 meses" style="width:100%; padding:0.6rem 0.9rem; font-size:0.85rem; border-radius:8px; border:1px solid var(--glass-border); background:rgba(0,0,0,0.25); color:white; outline:none;">
+                                </div>
+                            </div>
+
+                            <!-- IGP-M -->
+                            <div>
+                                <label style="display:flex; align-items:flex-start; gap:0.75rem; cursor:pointer; width:100%; text-align:left;">
+                                    <input type="checkbox" class="contract-clause" data-sub="clause-param-igpm" onchange="toggleClauseSubInput(this, 'clause-param-igpm')" style="width:auto; margin-top:0.25rem; flex-shrink:0;" value="Índice de reajuste: IGP-M">
+                                    <span style="flex:1;">Índice de reajuste: IGP-M</span>
+                                </label>
+                                <div id="clause-param-igpm" style="display:none; margin-left:2rem; margin-top:0.5rem;">
+                                    <input type="text" placeholder="Qual a periodicidade? Ex: A cada 12 meses" style="width:100%; padding:0.6rem 0.9rem; font-size:0.85rem; border-radius:8px; border:1px solid var(--glass-border); background:rgba(0,0,0,0.25); color:white; outline:none;">
+                                </div>
+                            </div>
+
+                            <!-- INPC -->
+                            <div>
+                                <label style="display:flex; align-items:flex-start; gap:0.75rem; cursor:pointer; width:100%; text-align:left;">
+                                    <input type="checkbox" class="contract-clause" data-sub="clause-param-inpc" onchange="toggleClauseSubInput(this, 'clause-param-inpc')" style="width:auto; margin-top:0.25rem; flex-shrink:0;" value="Índice de reajuste: INPC">
+                                    <span style="flex:1;">Índice de reajuste: INPC</span>
+                                </label>
+                                <div id="clause-param-inpc" style="display:none; margin-left:2rem; margin-top:0.5rem;">
+                                    <input type="text" placeholder="Qual a periodicidade? Ex: A cada 12 meses" style="width:100%; padding:0.6rem 0.9rem; font-size:0.85rem; border-radius:8px; border:1px solid var(--glass-border); background:rgba(0,0,0,0.25); color:white; outline:none;">
+                                </div>
+                            </div>
+
+                            <!-- SELIC -->
+                            <div>
+                                <label style="display:flex; align-items:flex-start; gap:0.75rem; cursor:pointer; width:100%; text-align:left;">
+                                    <input type="checkbox" class="contract-clause" data-sub="clause-param-selic" onchange="toggleClauseSubInput(this, 'clause-param-selic')" style="width:auto; margin-top:0.25rem; flex-shrink:0;" value="Índice de reajuste: SELIC">
+                                    <span style="flex:1;">Índice de reajuste: SELIC</span>
+                                </label>
+                                <div id="clause-param-selic" style="display:none; margin-left:2rem; margin-top:0.5rem;">
+                                    <input type="text" placeholder="Qual a periodicidade? Ex: A cada 12 meses" style="width:100%; padding:0.6rem 0.9rem; font-size:0.85rem; border-radius:8px; border:1px solid var(--glass-border); background:rgba(0,0,0,0.25); color:white; outline:none;">
+                                </div>
+                            </div>
+
+                            <!-- Non-compete -->
+                            <div>
+                                <label style="display:flex; align-items:flex-start; gap:0.75rem; cursor:pointer; width:100%; text-align:left;">
+                                    <input type="checkbox" class="contract-clause" data-sub="clause-param-noncompete" onchange="toggleClauseSubInput(this, 'clause-param-noncompete')" style="width:auto; margin-top:0.25rem; flex-shrink:0;" value="Cláusula de não concorrência (Non-compete)">
+                                    <span style="flex:1;">Cláusula de não concorrência (Non-compete)</span>
+                                </label>
+                                <div id="clause-param-noncompete" style="display:none; margin-left:2rem; margin-top:0.5rem;">
+                                    <input type="text" placeholder="Qual o prazo e área geográfica? Ex: 12 meses no Estado de SP" style="width:100%; padding:0.6rem 0.9rem; font-size:0.85rem; border-radius:8px; border:1px solid var(--glass-border); background:rgba(0,0,0,0.25); color:white; outline:none;">
+                                </div>
+                            </div>
+
+                            <!-- NDA -->
+                            <div>
+                                <label style="display:flex; align-items:flex-start; gap:0.75rem; cursor:pointer; width:100%; text-align:left;">
+                                    <input type="checkbox" class="contract-clause" data-sub="clause-param-nda" onchange="toggleClauseSubInput(this, 'clause-param-nda')" style="width:auto; margin-top:0.25rem; flex-shrink:0;" value="Confidencialidade (NDA)">
+                                    <span style="flex:1;">Confidencialidade (NDA)</span>
+                                </label>
+                                <div id="clause-param-nda" style="display:none; margin-left:2rem; margin-top:0.5rem;">
+                                    <input type="text" placeholder="Por quanto tempo após o término? Ex: 5 anos" style="width:100%; padding:0.6rem 0.9rem; font-size:0.85rem; border-radius:8px; border:1px solid var(--glass-border); background:rgba(0,0,0,0.25); color:white; outline:none;">
+                                </div>
+                            </div>
+
+                            <!-- Presencial -->
+                            <div>
+                                <label style="display:flex; align-items:flex-start; gap:0.75rem; cursor:pointer; width:100%; text-align:left;">
+                                    <input type="checkbox" class="contract-clause" data-sub="clause-param-presencial" onchange="toggleClauseSubInput(this, 'clause-param-presencial')" style="width:auto; margin-top:0.25rem; flex-shrink:0;" value="Forma de entrega: Presencial">
+                                    <span style="flex:1;">Forma de entrega: Presencial</span>
+                                </label>
+                                <div id="clause-param-presencial" style="display:none; margin-left:2rem; margin-top:0.5rem;">
+                                    <input type="text" placeholder="Qual o endereço ou local? Ex: Sede do contratante" style="width:100%; padding:0.6rem 0.9rem; font-size:0.85rem; border-radius:8px; border:1px solid var(--glass-border); background:rgba(0,0,0,0.25); color:white; outline:none;">
+                                </div>
+                            </div>
+
+                            <!-- Remoto -->
+                            <div>
+                                <label style="display:flex; align-items:flex-start; gap:0.75rem; cursor:pointer; width:100%; text-align:left;">
+                                    <input type="checkbox" class="contract-clause" data-sub="clause-param-remoto" onchange="toggleClauseSubInput(this, 'clause-param-remoto')" style="width:auto; margin-top:0.25rem; flex-shrink:0;" value="Forma de entrega: Remoto/Digital">
+                                    <span style="flex:1;">Forma de entrega: Remoto/Digital</span>
+                                </label>
+                                <div id="clause-param-remoto" style="display:none; margin-left:2rem; margin-top:0.5rem;">
+                                    <input type="text" placeholder="Qual a plataforma ou canal? Ex: Slack e E-mail" style="width:100%; padding:0.6rem 0.9rem; font-size:0.85rem; border-radius:8px; border:1px solid var(--glass-border); background:rgba(0,0,0,0.25); color:white; outline:none;">
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    </div><!-- end #contract-standard-fields -->
+
+                    <!-- NDA Simplified Form -->
+                    <div id="contract-nda-fields" style="display:none;">
+                        <div style="background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid var(--glass-border);">
+                            <h4 style="margin-top:0; color: #e2e8f0; margin-bottom: 1rem;">🔒 Dados do Acordo de Confidencialidade</h4>
+                            <div class="form-group"><label>Parte Divulgadora (quem revela informações)</label><input type="text" id="nda-divulgadora" placeholder="Nome completo ou Razão Social" required></div>
+                            <div class="form-group"><label>Parte Receptora (quem recebe informações)</label><input type="text" id="nda-receptora" placeholder="Nome completo ou Razão Social" required></div>
+                            <div class="contact-grid">
+                                <div class="form-group"><label>CPF/CNPJ da Divulgadora</label><input type="text" id="nda-doc-divulgadora" placeholder="CPF ou CNPJ"></div>
+                                <div class="form-group"><label>CPF/CNPJ da Receptora</label><input type="text" id="nda-doc-receptora" placeholder="CPF ou CNPJ"></div>
+                            </div>
+                            <div class="form-group"><label>Prazo de Vigência da Confidencialidade</label><input type="text" id="nda-prazo" placeholder="Ex: 5 anos após o encerramento do contrato"></div>
+                            <div class="form-group"><label>Objeto do Acordo (O que será protegido)</label><textarea id="nda-objeto" placeholder="Ex: Informações técnicas, comerciais, financeiras, banco de dados de clientes, código-fonte e propriedade intelectual compartilhados durante a parceria."></textarea></div>
+                            <div class="form-group"><label>Penalidade por Violação (opcional)</label><input type="text" id="nda-penalidade" placeholder="Ex: Multa de R$ 50.000,00 por infração comprovada"></div>
+                            <div class="form-group"><label>Foro de Eleição</label><input type="text" id="nda-foro" placeholder="Ex: São Paulo - SP"></div>
+                        </div>
+                    </div>
+
+                    <!-- Termos de Uso / LGPD Simplified Form -->
+                    <div id="contract-lgpd-fields" style="display:none;">
+                        <div style="background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid var(--glass-border);">
+                            <h4 style="margin-top:0; color: #e2e8f0; margin-bottom: 1rem;">🛡️ Dados para Termos de Uso e Política de Privacidade</h4>
+                            <div class="form-group"><label>Nome da Empresa / Plataforma</label><input type="text" id="lgpd-empresa" placeholder="Ex: DocAI Ltda." required></div>
+                            <div class="form-group"><label>CNPJ</label><input type="text" id="lgpd-cnpj" placeholder="00.000.000/0001-00"></div>
+                            <div class="form-group"><label>URL do Site / Aplicativo</label><input type="text" id="lgpd-url" placeholder="Ex: https://www.docai.com.br"></div>
+                            <div class="form-group"><label>E-mail do Encarregado (DPO) de Dados Pessoais</label><input type="text" id="lgpd-dpo" placeholder="Ex: privacidade@docai.com.br"></div>
+                            <div class="form-group"><label>Tipos de Dados Coletados</label><textarea id="lgpd-dados" placeholder="Ex: Nome, e-mail, CPF, endereço IP, cookies de navegação, dados de pagamento."></textarea></div>
+                            <div class="form-group"><label>Finalidade da Coleta</label><textarea id="lgpd-finalidade" placeholder="Ex: Geração de documentos, autenticação de usuários, comunicação de marketing (com consentimento)."></textarea></div>
+                            <div class="form-group"><label>Foro de Eleição</label><input type="text" id="lgpd-foro" placeholder="Ex: São Paulo - SP"></div>
+                        </div>
+                    </div>
+
                     <div class="form-group">
                         <label>Sugestões pessoais / Informações adicionais (opcional)</label>
-                        <textarea id="contract-suggestions" placeholder="Ex: Incluir uma cláusula de confidencialidade estrita, prever multa de 10% em caso de atraso..."></textarea>
+                        <textarea id="contract-suggestions" placeholder="Ex: Incluir uma cláusula específica sobre..."></textarea>
                     </div>
                     <div class="form-group">
                         <label>Imagens/Anexos complementares (opcional)</label>
@@ -538,12 +948,10 @@
                             <div class="paste-hint">Aceita prints da tela, fotos copiadas, etc.</div>
                         </div>
                         <div class="pasted-images" id="contract-pasted-images"></div>
-                        <div class="hint">Anexe fotos de rascunhos, certidões ou contratos anteriores para a IA ler.</div>
                     </div>
-                    <button type="submit" class="generate-btn">🤖 Gerar Contrato com IA</button>
+                    <button type="button" class="generate-btn" onclick="previewContract()">👁️ Revisar e Gerar Contrato</button>
                 </form>
             </div>
-
             <!-- REPORT FORM -->
             <div class="form-section" id="form-report" style="display: none;">
                 <h3>📊 Informações do Relatório</h3>
@@ -584,12 +992,33 @@
                 </form>
             </div>
 
+            
             <div class="success-msg" id="successMsg">
                 <h3>✅ Documento gerado com sucesso!</h3>
                 <p>Seu documento foi criado pela IA e está pronto para download.</p>
+                <div style="margin: 1.5rem 0; padding: 1rem; background: rgba(59, 130, 246, 0.1); border-radius: 12px; border: 1px dashed rgba(59, 130, 246, 0.3);">
+                    <p style="margin: 0; color: #cbd5e1; font-size: 0.95rem;">
+                        <i class="fas fa-signature" style="color:#3b82f6; margin-right: 0.5rem;"></i>
+                        <strong>Assinatura Digital:</strong> O PDF gerado já está otimizado para plataformas de assinatura eletrônica. Faça o download e envie para o <a href="https://www.docusign.com.br/" target="_blank" style="margin:0; padding:0; background:none; border:none; display:inline; font-weight:normal; text-decoration:underline;">DocuSign</a>, <a href="https://www.clicksign.com/" target="_blank" style="margin:0; padding:0; background:none; border:none; display:inline; font-weight:normal; text-decoration:underline;">Clicksign</a> ou <a href="https://assinador.iti.br/" target="_blank" style="margin:0; padding:0; background:none; border:none; display:inline; font-weight:normal; text-decoration:underline;">Gov.br</a>.
+                    </p>
+                </div>
                 <a href="/dashboard">Ver na Biblioteca</a>
                 <a href="#" id="downloadLink" style="margin-left: 0.5rem; background: rgba(59, 130, 246, 0.2); border-color: rgba(59, 130, 246, 0.3); color: #3b82f6;">⬇ Baixar PDF</a>
             </div>
+
+            <!-- Preview Modal -->
+            <div class="preview-modal" id="previewModal">
+                <div class="preview-content">
+                    <h3>👁️ Revisar Informações do Contrato</h3>
+                    <p style="font-size: 0.9rem; color: #94a3b8; margin-bottom: 1rem;">Verifique se os dados extraídos estão corretos antes de gerar. A IA usará exatamente essas informações.</p>
+                    <div class="preview-text" id="previewText"></div>
+                    <div class="preview-actions">
+                        <button class="btn-cancel" onclick="document.getElementById('previewModal').classList.remove('show')">Voltar e Editar</button>
+                        <button class="btn-confirm" onclick="confirmGenerateContract()">Gerar Contrato</button>
+                    </div>
+                </div>
+            </div>
+
         </main>
     </div>
 
@@ -617,6 +1046,280 @@
                 window.location.href = '/login';
             });
         });
+
+        function toggleClauseSubInput(checkbox, targetId) {
+            const subEl = document.getElementById(targetId);
+            if (subEl) {
+                subEl.style.display = checkbox.checked ? 'block' : 'none';
+                if (checkbox.checked) {
+                    subEl.querySelector('input').focus();
+                }
+            }
+        }
+
+        function selectContractTemplate(element) {
+            document.querySelectorAll('#form-contract .template-card').forEach(card => card.classList.remove('active'));
+            element.classList.add('active');
+            const tmpl = element.dataset.template;
+            document.getElementById('contract-template').value = tmpl;
+
+            // Toggle form visibility based on model type
+            const standardFields = document.getElementById('contract-standard-fields');
+            const ndaFields = document.getElementById('contract-nda-fields');
+            const lgpdFields = document.getElementById('contract-lgpd-fields');
+            
+            standardFields.style.display = 'none';
+            ndaFields.style.display = 'none';
+            lgpdFields.style.display = 'none';
+
+            if (tmpl === 'nda') {
+                ndaFields.style.display = 'block';
+            } else if (tmpl === 'termos_lgpd') {
+                lgpdFields.style.display = 'block';
+            } else {
+                standardFields.style.display = 'block';
+            }
+        }
+
+        // --- Search ---
+        let _activeCategory = 'all';
+        function filterContractModels() {
+            const query = document.getElementById('contractSearch').value.toLowerCase().trim();
+            document.querySelectorAll('#contractTemplateGrid .template-card').forEach(card => {
+                const name = card.dataset.name.toLowerCase();
+                const cat = card.dataset.category;
+                const matchSearch = !query || name.includes(query);
+                const matchCat = _activeCategory === 'all' || cat === _activeCategory;
+                card.classList.toggle('hidden', !(matchSearch && matchCat));
+            });
+        }
+
+        // --- Category Tabs ---
+        function filterByCategory(category, btn) {
+            _activeCategory = category;
+            document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+            btn.classList.add('active');
+            filterContractModels();
+        }
+
+        // --- Favorites ---
+        function getFavorites() {
+            try { return JSON.parse(localStorage.getItem('docai_fav_templates') || '[]'); } catch { return []; }
+        }
+        function saveFavorites(favs) {
+            localStorage.setItem('docai_fav_templates', JSON.stringify(favs));
+        }
+        function toggleFavorite(starEl) {
+            const card = starEl.closest('.template-card');
+            const tmpl = card.dataset.template;
+            let favs = getFavorites();
+            if (favs.includes(tmpl)) {
+                favs = favs.filter(f => f !== tmpl);
+                starEl.classList.remove('starred');
+                starEl.textContent = '☆';
+            } else {
+                favs.push(tmpl);
+                starEl.classList.add('starred');
+                starEl.textContent = '★';
+            }
+            saveFavorites(favs);
+            renderFavorites();
+        }
+        function renderFavorites() {
+            const favs = getFavorites();
+            const section = document.getElementById('favoritesSection');
+            const grid = document.getElementById('favoritesGrid');
+            grid.innerHTML = '';
+            if (favs.length === 0) { section.classList.remove('has-favorites'); return; }
+            section.classList.add('has-favorites');
+            favs.forEach(tmpl => {
+                const card = document.querySelector(`#contractTemplateGrid .template-card[data-template="${tmpl}"]`);
+                if (!card) return;
+                const chip = document.createElement('span');
+                chip.className = 'fav-chip';
+                chip.textContent = card.dataset.name;
+                const currentTmpl = document.getElementById('contract-template').value;
+                if (tmpl === currentTmpl) chip.classList.add('active');
+                chip.onclick = () => { selectContractTemplate(card); renderFavorites(); };
+                grid.appendChild(chip);
+            });
+            // Sync stars
+            document.querySelectorAll('#contractTemplateGrid .fav-star').forEach(star => {
+                const card = star.closest('.template-card');
+                if (favs.includes(card.dataset.template)) {
+                    star.classList.add('starred'); star.textContent = '★';
+                } else {
+                    star.classList.remove('starred'); star.textContent = '☆';
+                }
+            });
+        }
+
+        // Init favorites on load
+        document.addEventListener('DOMContentLoaded', () => { renderFavorites(); });
+
+        function togglePJ(party, isPJ) {
+            document.getElementById(party + '-pj-fields').style.display = isPJ ? 'block' : 'none';
+        }
+
+        function getPartyData(partyName, prefix) {
+            const isPJ = document.querySelector(`input[name="contract-${prefix}-type"]:checked`).value === 'pj';
+            const typeStr = isPJ ? 'Pessoa Jurídica' : 'Pessoa Física';
+            let data = `${partyName} (${typeStr}):\n`;
+            data += `Nome/Razão Social: ${document.getElementById(`contract-${prefix}-name`).value}\n`;
+            data += `CPF/CNPJ: ${document.getElementById(`contract-${prefix}-doc1`).value}\n`;
+            data += `RG/IE: ${document.getElementById(`contract-${prefix}-doc2`).value}\n`;
+            const email = document.getElementById(`contract-${prefix}-email`).value;
+            if (email) data += `E-mail: ${email}\n`;
+            data += `Endereço: ${document.getElementById(`contract-${prefix}-address`).value}\n`;
+            data += `Cidade: ${document.getElementById(`contract-${prefix}-city`).value}\n`;
+            data += `Estado: ${document.getElementById(`contract-${prefix}-state`).value}\n`;
+            data += `CEP: ${document.getElementById(`contract-${prefix}-zip`).value}\n`;
+            
+            if (isPJ) {
+                const repName = document.getElementById(`contract-${prefix}-rep-name`).value;
+                const repRole = document.getElementById(`contract-${prefix}-rep-role`).value;
+                data += `Representante Legal: ${repName}\n`;
+                data += `Cargo do Representante: ${repRole}\n`;
+            }
+            return data;
+        }
+
+        let pendingContractData = null;
+
+        function previewContract() {
+            const template = document.getElementById('contract-template').value;
+            const title = document.getElementById('contract-title').value;
+            if (!title) { alert('Preencha o título do documento.'); return; }
+
+            let dataString = `Modelo do Contrato: ${template}\n\n`;
+
+            if (template === 'nda') {
+                const divulgadora = document.getElementById('nda-divulgadora').value;
+                const receptora = document.getElementById('nda-receptora').value;
+                if (!divulgadora || !receptora) { alert('Preencha os nomes das partes.'); return; }
+                dataString += `Parte Divulgadora: ${divulgadora}\n`;
+                dataString += `CPF/CNPJ Divulgadora: ${document.getElementById('nda-doc-divulgadora').value}\n`;
+                dataString += `Parte Receptora: ${receptora}\n`;
+                dataString += `CPF/CNPJ Receptora: ${document.getElementById('nda-doc-receptora').value}\n\n`;
+                dataString += `Prazo de Vigência: ${document.getElementById('nda-prazo').value}\n`;
+                dataString += `Objeto do Acordo:\n${document.getElementById('nda-objeto').value}\n\n`;
+                const pen = document.getElementById('nda-penalidade').value;
+                if (pen) dataString += `Penalidade por Violação: ${pen}\n`;
+                dataString += `Foro de Eleição: ${document.getElementById('nda-foro').value}\n\n`;
+
+            } else if (template === 'termos_lgpd') {
+                const empresa = document.getElementById('lgpd-empresa').value;
+                if (!empresa) { alert('Preencha o nome da empresa.'); return; }
+                dataString += `Empresa/Plataforma: ${empresa}\n`;
+                dataString += `CNPJ: ${document.getElementById('lgpd-cnpj').value}\n`;
+                dataString += `URL: ${document.getElementById('lgpd-url').value}\n`;
+                dataString += `E-mail do Encarregado (DPO): ${document.getElementById('lgpd-dpo').value}\n\n`;
+                dataString += `Tipos de Dados Coletados:\n${document.getElementById('lgpd-dados').value}\n\n`;
+                dataString += `Finalidade da Coleta:\n${document.getElementById('lgpd-finalidade').value}\n\n`;
+                dataString += `Foro de Eleição: ${document.getElementById('lgpd-foro').value}\n\n`;
+
+            } else {
+                // Standard contract flow
+                if (!document.getElementById('contract-party1-name').value || !document.getElementById('contract-party2-name').value) {
+                    alert('Preencha pelo menos os nomes das partes.');
+                    return;
+                }
+                const party1 = getPartyData('CONTRATANTE', 'party1');
+                const party2 = getPartyData('CONTRATADA', 'party2');
+                const foro = document.getElementById('contract-foro').value;
+                const obj = document.getElementById('contract-object').value;
+                dataString += `${party1}\n${party2}\n`;
+                dataString += `Foro de Eleição: ${foro}\n\n`;
+                dataString += `Objeto e Condições:\n${obj}\n\n`;
+                
+                const clauses = Array.from(document.querySelectorAll('.contract-clause:checked')).map(cb => {
+                    const subId = cb.getAttribute('data-sub');
+                    const subInput = subId ? document.querySelector(`#${subId} input`) : null;
+                    if (subInput && subInput.value.trim()) {
+                        return `${cb.value} (Especificação: ${subInput.value.trim()})`;
+                    }
+                    return cb.value;
+                });
+                if (clauses.length > 0) {
+                    dataString += `Cláusulas Padronizadas Selecionadas:\n- ${clauses.join('\\n- ')}\n\n`;
+                }
+            }
+
+            const suggestions = document.getElementById('contract-suggestions').value;
+            if (suggestions) {
+                dataString += `Sugestões Adicionais:\n${suggestions}\n`;
+            }
+
+            pendingContractData = {
+                title: document.getElementById('contract-title').value,
+                data: dataString
+            };
+
+            document.getElementById('previewText').textContent = dataString;
+            document.getElementById('previewModal').classList.add('show');
+        }
+
+        function confirmGenerateContract() {
+            document.getElementById('previewModal').classList.remove('show');
+            const fakeEvent = { preventDefault: () => {} };
+            _executeContractSubmit(fakeEvent);
+        }
+
+        function _executeContractSubmit(e) {
+            e.preventDefault();
+            const token = localStorage.getItem('token');
+            const { title, data } = pendingContractData;
+
+            const formData = new FormData();
+            formData.append('type', 'contract');
+            formData.append('title', title);
+            formData.append('data', data);
+
+            const filesInput = document.getElementById('contract-images');
+            if (filesInput && filesInput.files.length > 0) {
+                for (let i = 0; i < filesInput.files.length; i++) {
+                    formData.append('images', filesInput.files[i]);
+                }
+            }
+
+            const pastedFiles = window._pastedFiles || [];
+            for (const file of pastedFiles) {
+                formData.append('images', file);
+            }
+
+            document.getElementById('loadingOverlay').classList.add('show');
+
+            authFetch('/api/docs/generate', {
+                method: 'POST',
+                body: formData
+            }).then(res => {
+                if (!res) return null;
+                return res.json().then(result => ({ok: res.ok, result}));
+            }).then(obj => {
+                if (!obj) return;
+                document.getElementById('loadingOverlay').classList.remove('show');
+                const {ok, result} = obj;
+                if (ok) {
+                    document.getElementById('form-contract').style.display = 'none';
+                    document.getElementById('successMsg').style.display = 'block';
+                    document.getElementById('downloadLink').href = `/api/docs/download/${result.document.id}`;
+                    document.getElementById('downloadLink').onclick = (ev) => {
+                        ev.preventDefault();
+                        authFetch(`/api/docs/download/${result.document.id}`).then(r => r ? r.blob() : null).then(blob => {
+                            if (!blob) return;
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url; a.download = title + '.pdf'; a.click();
+                        });
+                    };
+                } else {
+                    alert(result.message || 'Erro ao gerar documento');
+                }
+            }).catch(err => {
+                document.getElementById('loadingOverlay').classList.remove('show');
+                alert('Erro de conexão: ' + err.message);
+            });
+        }
 
         function selectTemplate(element) {
             document.querySelectorAll('.template-card').forEach(card => card.classList.remove('active'));
@@ -752,7 +1455,7 @@
         }
 
         document.getElementById('resumeForm')?.addEventListener('submit', submitDocument);
-        document.getElementById('contractForm')?.addEventListener('submit', submitDocument);
+        
         document.getElementById('reportForm')?.addEventListener('submit', submitDocument);
 
         // ========== Clipboard Paste & Drag-Drop for Images ==========
@@ -820,5 +1523,7 @@
         // Set up paste zone for the active form
         setupPasteZone(DOC_TYPE + '-paste-zone', DOC_TYPE + '-pasted-images');
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
 </body>
 </html>
