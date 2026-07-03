@@ -1,6 +1,9 @@
 /* theme.css - defines light and dark theme variables and imports main styles */
 @import url('style.css');
 
+/* ──────────────────────────────────────────────
+   Dark theme (default)
+   ────────────────────────────────────────────── */
 :root {
   --bg-color: #0f172a;
   --text-color: #f8fafc;
@@ -19,30 +22,218 @@
   --border-style: 1px solid var(--glass-border);
 }
 
+/* ──────────────────────────────────────────────
+   Light theme
+   ────────────────────────────────────────────── */
 [data-theme="light"] {
-  --bg-color: #f8fafc;
-  --text-color: #0f172a;
-  --text-muted: #475569;
-  --glass-bg: rgba(255, 255, 255, 0.65);
-  --glass-border: rgba(148, 163, 184, 0.2);
+  --bg-color: #f1f5f9;
+  --text-color: #1e293b;
+  --text-muted: #64748b;
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(148, 163, 184, 0.25);
   --primary: #2563eb;
-  --secondary: #4f46e5;
-  --card-text: #0f172a;
+  --secondary: #7c3aed;
+  --card-text: #1e293b;
   --nav-text: #475569;
-  --nav-active-bg: rgba(37, 99, 235, 0.1);
+  --nav-active-bg: rgba(37, 99, 235, 0.08);
   --nav-active-color: #2563eb;
-  --btn-sec-bg: rgba(0, 0, 0, 0.05);
-  --btn-sec-text: #0f172a;
+  --btn-sec-bg: rgba(15, 23, 42, 0.04);
+  --btn-sec-text: #334155;
   --title-color: #0f172a;
+  --border-style: 1px solid rgba(148, 163, 184, 0.25);
 }
 
 body {
   background: var(--bg-color);
   color: var(--text-color);
-  transition: background-color 0.3s, color 0.3s;
+  transition: background-color 0.4s ease, color 0.3s ease;
 }
 
-/* Theme utility classes to apply throughout application */
+/* ──────────────────────────────────────────────
+   Light mode premium overrides
+   ────────────────────────────────────────────── */
+
+[data-theme="light"] body {
+  background: linear-gradient(160deg, #f1f5f9 0%, #e8edf5 40%, #eef2ff 100%) !important;
+}
+
+[data-theme="light"] .glass-nav {
+  background: rgba(255, 255, 255, 0.82) !important;
+  backdrop-filter: blur(20px) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+  border-bottom-color: rgba(148, 163, 184, 0.15) !important;
+}
+
+[data-theme="light"] .glass-panel {
+  background: rgba(255, 255, 255, 0.78) !important;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.08),
+              0 0 0 1px rgba(148, 163, 184, 0.12) !important;
+  border-color: rgba(148, 163, 184, 0.2) !important;
+}
+
+[data-theme="light"] .blob-1,
+[data-theme="light"] .blob-2 {
+  opacity: 0.12 !important;
+}
+
+[data-theme="light"] .hero h1 {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .hero p {
+  color: #64748b !important;
+}
+
+[data-theme="light"] .gradient-text {
+  background: linear-gradient(135deg, #2563eb, #7c3aed) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+}
+
+[data-theme="light"] .feature-card {
+  background: rgba(255, 255, 255, 0.72) !important;
+  border-color: rgba(148, 163, 184, 0.2) !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
+}
+
+[data-theme="light"] .feature-card:hover {
+  box-shadow: 0 20px 40px rgba(37, 99, 235, 0.1),
+              0 0 0 1px rgba(37, 99, 235, 0.1) !important;
+  border-color: var(--primary) !important;
+}
+
+[data-theme="light"] .feature-card h3 {
+  color: #1e293b !important;
+}
+
+[data-theme="light"] .feature-card p,
+[data-theme="light"] .step p {
+  color: #64748b !important;
+}
+
+[data-theme="light"] .step {
+  background: rgba(255, 255, 255, 0.65) !important;
+  border-color: rgba(148, 163, 184, 0.2) !important;
+}
+
+[data-theme="light"] .step:hover {
+  border-color: var(--primary) !important;
+}
+
+[data-theme="light"] .step h3 {
+  color: #1e293b !important;
+}
+
+[data-theme="light"] .how-it-works h2 {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .footer {
+  color: #94a3b8 !important;
+  border-top-color: rgba(148, 163, 184, 0.15) !important;
+}
+
+[data-theme="light"] .nav-links a {
+  color: #475569 !important;
+}
+
+[data-theme="light"] .nav-links a:hover {
+  color: var(--primary) !important;
+}
+
+[data-theme="light"] .btn-login {
+  background: rgba(0, 0, 0, 0.04) !important;
+  color: #1e293b !important;
+  border-color: rgba(148, 163, 184, 0.25) !important;
+}
+
+/* Light mode auth pages */
+[data-theme="light"] .auth-box {
+  background: rgba(255, 255, 255, 0.82) !important;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.08),
+              0 0 0 1px rgba(148, 163, 184, 0.12) !important;
+  border-color: rgba(148, 163, 184, 0.2) !important;
+}
+
+[data-theme="light"] .auth-box h2 {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .form-group input,
+[data-theme="light"] .form-group textarea,
+[data-theme="light"] .form-group select {
+  background: rgba(241, 245, 249, 0.9) !important;
+  color: #1e293b !important;
+  border: 1px solid rgba(148, 163, 184, 0.3) !important;
+}
+
+[data-theme="light"] .form-group input:focus,
+[data-theme="light"] .form-group textarea:focus {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+}
+
+[data-theme="light"] .form-group label {
+  color: #475569 !important;
+}
+
+/* Light mode dashboard */
+[data-theme="light"] .sidebar {
+  background: rgba(255, 255, 255, 0.75) !important;
+  border-right: 1px solid rgba(148, 163, 184, 0.2) !important;
+}
+
+[data-theme="light"] .action-card {
+  background: rgba(255, 255, 255, 0.72) !important;
+  border-color: rgba(148, 163, 184, 0.2) !important;
+  color: #1e293b !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04) !important;
+}
+
+[data-theme="light"] .action-card:hover {
+  box-shadow: 0 15px 30px rgba(37, 99, 235, 0.1) !important;
+  border-color: var(--primary) !important;
+}
+
+[data-theme="light"] .action-card p {
+  color: #64748b !important;
+}
+
+[data-theme="light"] .doc-item {
+  background: rgba(255, 255, 255, 0.65) !important;
+  border-color: rgba(148, 163, 184, 0.2) !important;
+}
+
+[data-theme="light"] .doc-item:hover {
+  border-color: var(--primary) !important;
+}
+
+[data-theme="light"] .doc-actions button {
+  background: rgba(0, 0, 0, 0.03) !important;
+  color: #475569 !important;
+  border: 1px solid rgba(148, 163, 184, 0.2) !important;
+}
+
+[data-theme="light"] .doc-actions button:hover {
+  background: rgba(37, 99, 235, 0.06) !important;
+  color: var(--primary) !important;
+}
+
+[data-theme="light"] .empty-state {
+  color: #94a3b8 !important;
+  border-color: rgba(148, 163, 184, 0.2) !important;
+  background: rgba(0, 0, 0, 0.02) !important;
+}
+
+[data-theme="light"] .modal-content {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-color: rgba(148, 163, 184, 0.2) !important;
+}
+
+/* ──────────────────────────────────────────────
+   Component theme styles (both modes)
+   ────────────────────────────────────────────── */
+
 .sidebar {
   background: var(--glass-bg) !important;
   border-right: var(--border-style) !important;
@@ -93,10 +284,49 @@ body {
   border: var(--border-style) !important;
 }
 
+/* ──────────────────────────────────────────────
+   Button styles
+   ────────────────────────────────────────────── */
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
+  color: #ffffff !important;
+  box-shadow: 0 10px 20px rgba(59, 130, 246, 0.25) !important;
+  border: none !important;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 15px 25px rgba(59, 130, 246, 0.35) !important;
+  filter: brightness(1.1) !important;
+}
+
+[data-theme="light"] .btn-primary {
+  box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3) !important;
+}
+
+[data-theme="light"] .btn-primary:hover {
+  box-shadow: 0 15px 30px rgba(37, 99, 235, 0.35) !important;
+}
+
 .btn-secondary {
   background: var(--btn-sec-bg) !important;
   color: var(--btn-sec-text) !important;
   border: var(--border-style) !important;
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="light"] .btn-secondary {
+  background: rgba(15, 23, 42, 0.04) !important;
+  border: 1px solid rgba(148, 163, 184, 0.25) !important;
+  color: #334155 !important;
+}
+
+[data-theme="light"] .btn-secondary:hover {
+  background: rgba(15, 23, 42, 0.08) !important;
 }
 
 .empty-state {
@@ -104,7 +334,10 @@ body {
   border-color: var(--glass-border) !important;
 }
 
-/* Form inputs styling for theme adaptability */
+/* ──────────────────────────────────────────────
+   Form inputs styling
+   ────────────────────────────────────────────── */
+
 input, textarea, select {
   background: var(--btn-sec-bg) !important;
   color: var(--text-color) !important;
@@ -129,5 +362,3 @@ label {
 .auth-box h2 {
   color: var(--text-color) !important;
 }
-
-

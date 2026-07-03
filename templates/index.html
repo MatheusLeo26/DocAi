@@ -12,6 +12,10 @@
             background-color: #0f172a !important;
             color: #f8fafc !important;
         }
+        html[data-theme="light"], html[data-theme="light"] body {
+            background-color: #f1f5f9 !important;
+            color: #1e293b !important;
+        }
     </style>
 
     <!-- Blocking Script to apply stored light theme before render if necessary -->
@@ -50,9 +54,6 @@
             padding: 2.5rem 2rem;
             text-align: center;
             transition: all 0.4s;
-            opacity: 0;
-            transform: translateY(30px);
-            animation: fadeInUp 0.8s ease forwards;
         }
         .feature-card:nth-child(2) { animation-delay: 0.15s; }
         .feature-card:nth-child(3) { animation-delay: 0.3s; }
