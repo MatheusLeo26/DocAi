@@ -20,13 +20,15 @@ class Document(db.Model):
     type = db.Column(db.String(50), nullable=False) # e.g. 'resume', 'contract', 'report'
     title = db.Column(db.String(255), nullable=False)
     file_path = db.Column(db.String(255), nullable=False)
+    content_html = db.Column(db.Text, nullable=True) # Stores the raw generated AI content (HTML)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    def __init__(self, user_id: int, type: str, title: str, file_path: str, **kwargs):
+    def __init__(self, user_id: int, type: str, title: str, file_path: str, content_html: str = None, **kwargs):
         self.user_id = user_id
         self.type = type
         self.title = title
         self.file_path = file_path
+        self.content_html = content_html
         super().__init__(**kwargs)
 
 class Draft(db.Model):

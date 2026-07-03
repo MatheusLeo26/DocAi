@@ -1439,8 +1439,47 @@
             // Parse URL parameters
             const urlParams = new URLSearchParams(window.location.search);
             const draftId = urlParams.get('draft_id');
+            const docId = urlParams.get('doc_id');
 
-            if (draftId) {
+            if (docId) {
+                currentDocId = parseInt(docId);
+                document.getElementById('loadingOverlay').querySelector('.loading-text').textContent = 'Carregando documento...';
+                document.getElementById('loadingOverlay').classList.add('show');
+                
+                authFetch(`/api/docs/content/${currentDocId}`)
+                    .then(res => res ? res.json() : null)
+                    .then(data => {
+                        document.getElementById('loadingOverlay').classList.remove('show');
+                        if (data && data.document) {
+                            const doc = data.document;
+                            
+                            // Hide the input form
+                            const formEl = document.getElementById('form-' + DOC_TYPE);
+                            if (formEl) formEl.style.display = 'none';
+                            
+                            // Set the title field in the form
+                            const titleField = document.getElementById(DOC_TYPE + '-title');
+                            if (titleField) titleField.value = doc.title;
+                            
+                            // Display editor mode
+                            const editMode = document.getElementById('editModeSection');
+                            editMode.style.display = 'block';
+                            
+                            originalAiContent = doc.content_html;
+                            editedContentState = doc.content_html;
+                            document.getElementById('richEditor').innerHTML = doc.content_html;
+                            hasUnsavedEditorChanges = false;
+                            
+                            document.getElementById('richEditor').addEventListener('input', () => {
+                                hasUnsavedEditorChanges = true;
+                                document.getElementById('editorStatus').style.display = 'none';
+                            });
+                        }
+                    }).catch(err => {
+                        document.getElementById('loadingOverlay').classList.remove('show');
+                        alert('Erro ao carregar documento: ' + err.message);
+                    });
+            } else if (draftId) {
                 currentDraftId = parseInt(draftId);
                 authFetch(`/api/docs/draft/${currentDraftId}`)
                     .then(res => res ? res.json() : null)
@@ -1965,6 +2004,7 @@
         let originalAiContent = '';
         let editedContentState = '';
         let hasUnsavedEditorChanges = false;
+        let currentDocId = null;
 
         function execEditorCommand(command, value = null) {
             document.execCommand(command, false, value);
@@ -2035,6 +2075,9 @@
             formData.append('edited_content', editedContentState);
             if (currentDraftId) {
                 formData.append('draft_id', currentDraftId);
+            }
+            if (currentDocId) {
+                formData.append('doc_id', currentDocId);
             }
 
             // Collect files

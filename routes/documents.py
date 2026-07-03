@@ -61,22 +61,35 @@ def generate_document():
         else:
             ai_content = generate_content(doc_type, user_data, temp_image_paths)
 
+        doc_id = request.form.get('doc_id') if not request.is_json else data.get('doc_id')
+        doc = None
+        if doc_id:
+            doc = Document.query.filter_by(id=int(doc_id), user_id=int(user_id)).first()
+
         # Step 2: Generate PDF with Playwright
-        filename = f"{doc_type}_{uuid.uuid4().hex[:8]}.pdf"
-        user_folder = os.path.join(UPLOAD_FOLDER, str(user_id))
-        os.makedirs(user_folder, exist_ok=True)
-        output_path = os.path.join(user_folder, filename)
+        if doc:
+            output_path = doc.file_path
+        else:
+            filename = f"{doc_type}_{uuid.uuid4().hex[:8]}.pdf"
+            user_folder = os.path.join(UPLOAD_FOLDER, str(user_id))
+            os.makedirs(user_folder, exist_ok=True)
+            output_path = os.path.join(user_folder, filename)
 
         create_document_pdf(doc_type, ai_content, output_path)
 
-        # Step 3: Save document metadata to database
-        doc = Document(
-            user_id=int(user_id),
-            type=doc_type,
-            title=title,
-            file_path=output_path
-        )
-        db.session.add(doc)
+        # Step 3: Save or update document metadata in database
+        if doc:
+            doc.title = title
+            doc.content_html = ai_content
+        else:
+            doc = Document(
+                user_id=int(user_id),
+                type=doc_type,
+                title=title,
+                file_path=output_path,
+                content_html=ai_content
+            )
+            db.session.add(doc)
         
         # If a draft ID was provided, delete the draft upon successful PDF generation
         draft_id = request.form.get('draft_id') if not request.is_json else data.get('draft_id')
@@ -162,6 +175,26 @@ def view_document(doc_id):
         return jsonify({'message': 'Arquivo não encontrado no servidor'}), 404
 
     return send_file(doc.file_path, mimetype='application/pdf')
+
+
+@docs_bp.route('/content/<int:doc_id>', methods=['GET'])
+@jwt_required()
+def get_document_content(doc_id):
+    """Retrieve the raw HTML content of a generated document."""
+    user_id = get_jwt_identity()
+    doc = Document.query.filter_by(id=doc_id, user_id=int(user_id)).first()
+
+    if not doc:
+        return jsonify({'message': 'Documento não encontrado'}), 404
+
+    return jsonify({
+        'document': {
+            'id': doc.id,
+            'type': doc.type,
+            'title': doc.title,
+            'content_html': doc.content_html or ''
+        }
+    }), 200
 
 
 @docs_bp.route('/delete/<int:doc_id>', methods=['DELETE'])

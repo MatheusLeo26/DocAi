@@ -28,4 +28,9 @@ if __name__ == '__main__':
     with app.app_context():
         import models
         db.create_all()
+        try:
+            db.session.execute(db.text("ALTER TABLE document ADD COLUMN content_html TEXT;"))
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
     app.run(host='0.0.0.0', port=5000, debug=True)
