@@ -1028,6 +1028,43 @@
                 </form>
             </div>
 
+            <!-- EDIT MODE SECTION -->
+            <div class="form-section" id="editModeSection" style="display: none; max-width: 900px; margin-bottom: 2rem; border-color: rgba(59, 130, 246, 0.3);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.5rem;">
+                    <h3 style="margin: 0; display: flex; align-items: center; gap: 0.5rem; color: #e2e8f0;"><i class="fas fa-edit" style="color: var(--primary);"></i> Modo de Edição Manual</h3>
+                    <div style="font-size: 0.85rem; color: #10b981; display: none; font-weight: 600;" id="editorStatus"><i class="fas fa-check-circle"></i> Alterações salvas na memória</div>
+                </div>
+                
+                <div style="background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.25); border-radius: 12px; padding: 1.2rem; margin-bottom: 1.5rem; color: #cbd5e1; font-size: 0.92rem; line-height: 1.5;">
+                    <i class="fas fa-info-circle" style="color: var(--primary); margin-right: 0.5rem; font-size: 1rem;"></i>
+                    Você está no modo de edição manual. Edite o texto abaixo conforme necessário e clique em <strong>Gerar PDF Final</strong> para compilar o arquivo com as suas alterações.
+                </div>
+                
+                <div style="margin-bottom: 1.5rem; border-radius: 12px; overflow: hidden; border: 1px solid var(--glass-border);">
+                    <!-- Editor toolbar -->
+                    <div id="editorToolbar" style="background: rgba(0,0,0,0.3); border-bottom: 1px solid var(--glass-border); padding: 0.6rem 1rem; display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+                        <button type="button" class="btn-editor-tool" onclick="execEditorCommand('bold')" title="Negrito" style="background:none; border:none; color:#94a3b8; cursor:pointer; font-weight:bold; font-size:1.1rem; padding: 4px 8px; transition: color 0.2s;">B</button>
+                        <button type="button" class="btn-editor-tool" onclick="execEditorCommand('italic')" title="Itálico" style="background:none; border:none; color:#94a3b8; cursor:pointer; font-style:italic; font-size:1.1rem; padding: 4px 8px; transition: color 0.2s;">I</button>
+                        <button type="button" class="btn-editor-tool" onclick="execEditorCommand('underline')" title="Sublinhado" style="background:none; border:none; color:#94a3b8; cursor:pointer; text-decoration:underline; font-size:1.1rem; padding: 4px 8px; transition: color 0.2s;">U</button>
+                        <span style="border-right: 1px solid var(--glass-border); height: 20px;"></span>
+                        <button type="button" class="btn-editor-tool" onclick="execEditorCommand('insertUnorderedList')" title="Lista com Marcadores" style="background:none; border:none; color:#94a3b8; cursor:pointer; font-size:1rem; padding: 4px 8px; transition: color 0.2s;"><i class="fas fa-list-ul"></i></button>
+                        <button type="button" class="btn-editor-tool" onclick="execEditorCommand('insertOrderedList')" title="Lista Numerada" style="background:none; border:none; color:#94a3b8; cursor:pointer; font-size:1rem; padding: 4px 8px; transition: color 0.2s;"><i class="fas fa-list-ol"></i></button>
+                        <span style="border-right: 1px solid var(--glass-border); height: 20px;"></span>
+                        <button type="button" class="btn-editor-tool" onclick="execEditorCommand('justifyLeft')" title="Alinhar à Esquerda" style="background:none; border:none; color:#94a3b8; cursor:pointer; font-size:1rem; padding: 4px 8px; transition: color 0.2s;"><i class="fas fa-align-left"></i></button>
+                        <button type="button" class="btn-editor-tool" onclick="execEditorCommand('justifyCenter')" title="Centralizar" style="background:none; border:none; color:#94a3b8; cursor:pointer; font-size:1rem; padding: 4px 8px; transition: color 0.2s;"><i class="fas fa-align-center"></i></button>
+                        <button type="button" class="btn-editor-tool" onclick="execEditorCommand('justifyRight')" title="Alinhar à Direita" style="background:none; border:none; color:#94a3b8; cursor:pointer; font-size:1rem; padding: 4px 8px; transition: color 0.2s;"><i class="fas fa-align-right"></i></button>
+                    </div>
+                    <!-- Editor box -->
+                    <div id="richEditor" contenteditable="true" style="min-height: 450px; max-height: 650px; overflow-y: auto; background: rgba(0, 0, 0, 0.2); padding: 1.8rem; outline: none; color: white; font-family: 'Inter', sans-serif; line-height: 1.6; text-align: left;"></div>
+                </div>
+                
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <button type="button" class="btn-secondary" onclick="saveEditorChanges()" style="flex: 1; padding: 1rem; min-width: 160px;"><i class="fas fa-save" style="margin-right: 0.5rem;"></i> Salvar Alterações</button>
+                    <button type="button" class="btn-secondary" onclick="resetEditorContent()" style="flex: 1; padding: 1rem; border-color: rgba(239, 68, 68, 0.3) !important; color: #ef4444 !important; min-width: 160px;"><i class="fas fa-undo" style="margin-right: 0.5rem;"></i> Cancelar/Resetar</button>
+                    <button type="button" class="generate-btn" onclick="generatePdfFromEditor()" style="flex: 2; margin-top: 0; min-width: 220px;"><i class="fas fa-file-pdf" style="margin-right: 0.5rem;"></i> Gerar PDF Final</button>
+                </div>
+            </div>
+
             
             <div class="success-msg" id="successMsg">
                 <h3>✅ Documento gerado com sucesso!</h3>
@@ -1580,7 +1617,22 @@
 
         let pendingContractData = null;
 
-        function previewContract() {
+        async function previewContract() {
+            if (editedContentState && editedContentState !== originalAiContent) {
+                const confirmRegen = await Swal.fire({
+                    title: 'Você tem alterações salvas!',
+                    text: 'Regenerar o documento substituirá seu texto editado manualmente. Deseja continuar?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sim, regenerar',
+                    cancelButtonText: 'Não, manter minhas edições',
+                    background: 'var(--glass-bg)',
+                    color: '#fff',
+                    confirmButtonColor: '#d33'
+                });
+                if (!confirmRegen.isConfirmed) return;
+            }
+
             const template = document.getElementById('contract-template').value;
             const title = document.getElementById('contract-title').value;
             if (!title) { alert('Preencha o título do documento.'); return; }
@@ -1684,39 +1736,36 @@
                 formData.append('images', file);
             }
 
+            document.getElementById('loadingOverlay').querySelector('.loading-text').textContent = 'A IA está gerando o contrato...';
             document.getElementById('loadingOverlay').classList.add('show');
 
-            authFetch('/api/docs/generate', {
+            authFetch('/api/docs/generate-content', {
                 method: 'POST',
                 body: formData
-            }).then(res => {
-                if (!res) return null;
-                return res.json().then(result => ({ok: res.ok, result}));
-            }).then(obj => {
-                if (!obj) return;
-                document.getElementById('loadingOverlay').classList.remove('show');
-                const {ok, result} = obj;
-                if (ok) {
-                    localStorage.removeItem(`docai_autosave_${DOC_TYPE}`);
-                    document.getElementById('form-contract').style.display = 'none';
-                    document.getElementById('successMsg').style.display = 'block';
-                    document.getElementById('downloadLink').href = `/api/docs/download/${result.document.id}`;
-                    document.getElementById('downloadLink').onclick = (ev) => {
-                        ev.preventDefault();
-                        authFetch(`/api/docs/download/${result.document.id}`).then(r => r ? r.blob() : null).then(blob => {
-                            if (!blob) return;
-                            const url = URL.createObjectURL(blob);
-                            const a = document.createElement('a');
-                            a.href = url; a.download = title + '.pdf'; a.click();
-                        });
-                    };
-                } else {
-                    alert(result.message || 'Erro ao gerar documento');
-                }
-            }).catch(err => {
-                document.getElementById('loadingOverlay').classList.remove('show');
-                alert('Erro de conexão: ' + err.message);
-            });
+            }).then(res => res ? res.json() : null)
+              .then(result => {
+                  document.getElementById('loadingOverlay').classList.remove('show');
+                  if (result && result.content) {
+                      document.getElementById('form-contract').style.display = 'none';
+                      const editMode = document.getElementById('editModeSection');
+                      editMode.style.display = 'block';
+                      
+                      originalAiContent = result.content;
+                      editedContentState = result.content;
+                      document.getElementById('richEditor').innerHTML = result.content;
+                      hasUnsavedEditorChanges = false;
+                      
+                      document.getElementById('richEditor').addEventListener('input', () => {
+                          hasUnsavedEditorChanges = true;
+                          document.getElementById('editorStatus').style.display = 'none';
+                      });
+                  } else {
+                      alert(result ? result.message : 'Erro ao gerar conteúdo do contrato');
+                  }
+              }).catch(err => {
+                  document.getElementById('loadingOverlay').classList.remove('show');
+                  alert('Erro de conexão: ' + err.message);
+              });
         }
 
         function selectTemplate(element) {
@@ -1765,6 +1814,23 @@
 
         async function submitDocument(e) {
             e.preventDefault();
+
+            // Check for manual edits warning
+            if ((DOC_TYPE === 'contract' || DOC_TYPE === 'report') && editedContentState && editedContentState !== originalAiContent) {
+                const confirmRegen = await Swal.fire({
+                    title: 'Você tem alterações salvas!',
+                    text: 'Regenerar o documento substituirá seu texto editado manualmente. Deseja continuar?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sim, regenerar',
+                    cancelButtonText: 'Não, manter minhas edições',
+                    background: 'var(--glass-bg)',
+                    color: '#fff',
+                    confirmButtonColor: '#d33'
+                });
+                if (!confirmRegen.isConfirmed) return;
+            }
+
             const token = localStorage.getItem('token');
             const { title, data } = collectData();
 
@@ -1820,27 +1886,196 @@
 
             document.getElementById('loadingOverlay').classList.add('show');
 
+            if (DOC_TYPE === 'report') {
+                document.getElementById('loadingOverlay').querySelector('.loading-text').textContent = 'A IA está gerando o relatório...';
+                try {
+                    const res = await authFetch('/api/docs/generate-content', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    if (!res) return;
+                    const result = await res.json();
+                    document.getElementById('loadingOverlay').classList.remove('show');
+                    
+                    if (res.ok && result.content) {
+                        document.getElementById('form-report').style.display = 'none';
+                        const editMode = document.getElementById('editModeSection');
+                        editMode.style.display = 'block';
+                        
+                        originalAiContent = result.content;
+                        editedContentState = result.content;
+                        document.getElementById('richEditor').innerHTML = result.content;
+                        hasUnsavedEditorChanges = false;
+                        
+                        document.getElementById('richEditor').addEventListener('input', () => {
+                            hasUnsavedEditorChanges = true;
+                            document.getElementById('editorStatus').style.display = 'none';
+                        });
+                    } else {
+                        alert(result.message || 'Erro ao gerar relatório');
+                    }
+                } catch (err) {
+                    document.getElementById('loadingOverlay').classList.remove('show');
+                    alert('Erro de conexão: ' + err.message);
+                }
+            } else {
+                try {
+                    const res = await authFetch('/api/docs/generate', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (!res) return;
+                    const result = await res.json();
+                    document.getElementById('loadingOverlay').classList.remove('show');
+
+                    if (res.ok) {
+                        localStorage.removeItem(`docai_autosave_${DOC_TYPE}`);
+                        document.getElementById('form-' + DOC_TYPE).style.display = 'none';
+                        document.getElementById('successMsg').style.display = 'block';
+                        document.getElementById('downloadLink').href = `/api/docs/download/${result.document.id}`;
+                        document.getElementById('downloadLink').onclick = (ev) => {
+                            ev.preventDefault();
+                            authFetch(`/api/docs/download/${result.document.id}`).then(r => {
+                                if (!r) return;
+                                return r.blob();
+                            }).then(blob => {
+                                if (!blob) return;
+                                const url = URL.createObjectURL(blob);
+                                const a = document.createElement('a');
+                                a.href = url; a.download = title + '.pdf'; a.click();
+                            });
+                        };
+                    } else {
+                        alert(result.message || 'Erro ao gerar documento');
+                    }
+                } catch (err) {
+                    document.getElementById('loadingOverlay').classList.remove('show');
+                    alert('Erro de conexão: ' + err.message);
+                }
+            }
+        }
+
+        document.getElementById('resumeForm')?.addEventListener('submit', submitDocument);
+        
+        document.getElementById('reportForm')?.addEventListener('submit', submitDocument);
+
+        // ========== Rich Text Editor Commands & Helper Functions ==========
+        let originalAiContent = '';
+        let editedContentState = '';
+        let hasUnsavedEditorChanges = false;
+
+        function execEditorCommand(command, value = null) {
+            document.execCommand(command, false, value);
+            hasUnsavedEditorChanges = true;
+            document.getElementById('editorStatus').style.display = 'none';
+        }
+
+        function saveEditorChanges() {
+            const editor = document.getElementById('richEditor');
+            editedContentState = editor.innerHTML;
+            hasUnsavedEditorChanges = false;
+            
+            const status = document.getElementById('editorStatus');
+            status.style.display = 'block';
+            
+            Swal.fire({
+                title: 'Alterações Salvas!',
+                text: 'As alterações foram salvas temporariamente na memória.',
+                icon: 'success',
+                background: 'var(--glass-bg)',
+                color: '#fff',
+                confirmButtonColor: '#3b82f6',
+                timer: 1500,
+                showConfirmButton: false
+            });
+        }
+
+        function resetEditorContent() {
+            Swal.fire({
+                title: 'Resetar conteúdo?',
+                text: 'Todas as suas alterações manuais serão substituídas pelo texto original da IA.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sim, resetar',
+                cancelButtonText: 'Cancelar',
+                background: 'var(--glass-bg)',
+                color: '#fff',
+                confirmButtonColor: '#d33'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const editor = document.getElementById('richEditor');
+                    editor.innerHTML = originalAiContent;
+                    editedContentState = originalAiContent;
+                    hasUnsavedEditorChanges = false;
+                    document.getElementById('editorStatus').style.display = 'none';
+                }
+            });
+        }
+
+        async function generatePdfFromEditor() {
+            // Auto-save latest HTML state if not explicitly saved
+            const editor = document.getElementById('richEditor');
+            editedContentState = editor.innerHTML;
+            hasUnsavedEditorChanges = false;
+
+            const token = localStorage.getItem('token');
+            let title = '';
+            if (DOC_TYPE === 'contract') {
+                title = document.getElementById('contract-title').value;
+            } else {
+                title = document.getElementById('report-title').value;
+            }
+
+            const formData = new FormData();
+            formData.append('type', DOC_TYPE);
+            formData.append('title', title);
+            formData.append('data', 'edited_version');
+            formData.append('edited_content', editedContentState);
+            if (currentDraftId) {
+                formData.append('draft_id', currentDraftId);
+            }
+
+            // Collect files
+            let filesInput = null;
+            if (DOC_TYPE === 'contract') {
+                filesInput = document.getElementById('contract-images');
+            } else if (DOC_TYPE === 'report') {
+                filesInput = document.getElementById('report-images');
+            }
+            if (filesInput && filesInput.files.length > 0) {
+                for (let i = 0; i < filesInput.files.length; i++) {
+                    formData.append('images', filesInput.files[i]);
+                }
+            }
+
+            const pastedFiles = window._pastedFiles || [];
+            for (const file of pastedFiles) {
+                formData.append('images', file);
+            }
+
+            document.getElementById('loadingOverlay').querySelector('.loading-text').textContent = 'Gerando arquivo PDF final...';
+            document.getElementById('loadingOverlay').classList.add('show');
+
             try {
                 const res = await authFetch('/api/docs/generate', {
                     method: 'POST',
                     body: formData
                 });
 
+                document.getElementById('loadingOverlay').classList.remove('show');
                 if (!res) return;
                 const result = await res.json();
-                document.getElementById('loadingOverlay').classList.remove('show');
 
                 if (res.ok) {
                     localStorage.removeItem(`docai_autosave_${DOC_TYPE}`);
-                    document.getElementById('form-' + DOC_TYPE).style.display = 'none';
+                    document.getElementById('editModeSection').style.display = 'none';
                     document.getElementById('successMsg').style.display = 'block';
                     document.getElementById('downloadLink').href = `/api/docs/download/${result.document.id}`;
                     document.getElementById('downloadLink').onclick = (ev) => {
                         ev.preventDefault();
-                        authFetch(`/api/docs/download/${result.document.id}`).then(r => {
-                            if (!r) return;
-                            return r.blob();
-                        }).then(blob => {
+                        authFetch(`/api/docs/download/${result.document.id}`).then(r => r ? r.blob() : null).then(blob => {
                             if (!blob) return;
                             const url = URL.createObjectURL(blob);
                             const a = document.createElement('a');
@@ -1848,17 +2083,13 @@
                         });
                     };
                 } else {
-                    alert(result.message || 'Erro ao gerar documento');
+                    alert(result.message || 'Erro ao gerar PDF');
                 }
             } catch (err) {
                 document.getElementById('loadingOverlay').classList.remove('show');
                 alert('Erro de conexão: ' + err.message);
             }
         }
-
-        document.getElementById('resumeForm')?.addEventListener('submit', submitDocument);
-        
-        document.getElementById('reportForm')?.addEventListener('submit', submitDocument);
 
         // ========== Clipboard Paste & Drag-Drop for Images ==========
         window._pastedFiles = [];

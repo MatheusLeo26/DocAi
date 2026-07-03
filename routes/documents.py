@@ -54,8 +54,12 @@ def generate_document():
                     f.save(path)
                     temp_image_paths.append(path)
 
-        # Step 1: Generate professional content with AI
-        ai_content = generate_content(doc_type, user_data, temp_image_paths)
+        # Step 1: Generate professional content with AI or use edited_content
+        edited_content = request.form.get('edited_content') if not request.is_json else data.get('edited_content')
+        if edited_content:
+            ai_content = edited_content
+        else:
+            ai_content = generate_content(doc_type, user_data, temp_image_paths)
 
         # Step 2: Generate PDF with Playwright
         filename = f"{doc_type}_{uuid.uuid4().hex[:8]}.pdf"
@@ -285,3 +289,58 @@ def delete_draft(draft_id):
     db.session.commit()
     
     return jsonify({'message': 'Rascunho excluído com sucesso'}), 200
+
+
+@docs_bp.route('/generate-content', methods=['POST'])
+@jwt_required()
+def generate_raw_content():
+    """Receive user data, generate content with AI, and return the raw generated text (HTML)."""
+    user_id = get_jwt_identity()
+    
+    # Handle both JSON and multipart form data
+    if request.is_json:
+        data = request.get_json()
+        doc_type = data.get('type')
+        user_data = data.get('data')
+        files = []
+    else:
+        doc_type = request.form.get('type')
+        user_data = request.form.get('data')
+        files = request.files.getlist('images')
+
+    if not doc_type or not user_data:
+        return jsonify({'message': 'Tipo de documento e dados são obrigatórios'}), 400
+
+    temp_image_paths = []
+    try:
+        # Save uploaded images temporarily
+        if files:
+            temp_dir = os.path.join(UPLOAD_FOLDER, str(user_id), 'temp')
+            os.makedirs(temp_dir, exist_ok=True)
+            for f in files:
+                if f and f.filename:
+                    filename = secure_filename(f.filename)
+                    unique_name = f"{uuid.uuid4().hex[:8]}_{filename}"
+                    path = os.path.join(temp_dir, unique_name)
+                    f.save(path)
+                    temp_image_paths.append(path)
+
+        # Generate professional content with AI
+        ai_content = generate_content(doc_type, user_data, temp_image_paths)
+
+        # Clean up temporary images
+        for path in temp_image_paths:
+            if os.path.exists(path):
+                os.remove(path)
+
+        return jsonify({
+            'message': 'Conteúdo gerado com sucesso!',
+            'content': ai_content
+        }), 200
+
+    except Exception as e:
+        for path in temp_image_paths:
+            if os.path.exists(path):
+                os.remove(path)
+        return jsonify({'message': f'Erro ao gerar conteúdo: {str(e)}'}), 500
+
