@@ -1029,33 +1029,33 @@
             </div>
 
             <!-- EDIT MODE SECTION -->
-            <div class="form-section" id="editModeSection" style="display: none; max-width: 900px; margin-bottom: 2rem; border-color: rgba(59, 130, 246, 0.3);">
+            <div class="form-section" id="editModeSection" style="display: none; max-width: 900px; margin-bottom: 2rem; border-color: var(--primary);">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.5rem;">
-                    <h3 style="margin: 0; display: flex; align-items: center; gap: 0.5rem; color: #e2e8f0;"><i class="fas fa-edit" style="color: var(--primary);"></i> Modo de Edição Manual</h3>
+                    <h3 style="margin: 0; display: flex; align-items: center; gap: 0.5rem; color: var(--title-color);"><i class="fas fa-edit" style="color: var(--primary);"></i> Modo de Edição Manual</h3>
                     <div style="font-size: 0.85rem; color: #10b981; display: none; font-weight: 600;" id="editorStatus"><i class="fas fa-check-circle"></i> Alterações salvas na memória</div>
                 </div>
                 
-                <div style="background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.25); border-radius: 12px; padding: 1.2rem; margin-bottom: 1.5rem; color: #cbd5e1; font-size: 0.92rem; line-height: 1.5;">
+                <div style="background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.25); border-radius: 12px; padding: 1.2rem; margin-bottom: 1.5rem; color: var(--text-color); font-size: 0.92rem; line-height: 1.5;">
                     <i class="fas fa-info-circle" style="color: var(--primary); margin-right: 0.5rem; font-size: 1rem;"></i>
                     Você está no modo de edição manual. Edite o texto abaixo conforme necessário e clique em <strong>Gerar PDF Final</strong> para compilar o arquivo com as suas alterações.
                 </div>
                 
-                <div style="margin-bottom: 1.5rem; border-radius: 12px; overflow: hidden; border: 1px solid var(--glass-border);">
+                <div style="margin-bottom: 1.5rem; border-radius: 12px; overflow: hidden; border: var(--border-style);">
                     <!-- Editor toolbar -->
-                    <div id="editorToolbar" style="background: rgba(0,0,0,0.3); border-bottom: 1px solid var(--glass-border); padding: 0.6rem 1rem; display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
-                        <button type="button" class="btn-editor-tool" onclick="execEditorCommand('bold')" title="Negrito" style="background:none; border:none; color:#94a3b8; cursor:pointer; font-weight:bold; font-size:1.1rem; padding: 4px 8px; transition: color 0.2s;">B</button>
-                        <button type="button" class="btn-editor-tool" onclick="execEditorCommand('italic')" title="Itálico" style="background:none; border:none; color:#94a3b8; cursor:pointer; font-style:italic; font-size:1.1rem; padding: 4px 8px; transition: color 0.2s;">I</button>
-                        <button type="button" class="btn-editor-tool" onclick="execEditorCommand('underline')" title="Sublinhado" style="background:none; border:none; color:#94a3b8; cursor:pointer; text-decoration:underline; font-size:1.1rem; padding: 4px 8px; transition: color 0.2s;">U</button>
-                        <span style="border-right: 1px solid var(--glass-border); height: 20px;"></span>
-                        <button type="button" class="btn-editor-tool" onclick="execEditorCommand('insertUnorderedList')" title="Lista com Marcadores" style="background:none; border:none; color:#94a3b8; cursor:pointer; font-size:1rem; padding: 4px 8px; transition: color 0.2s;"><i class="fas fa-list-ul"></i></button>
-                        <button type="button" class="btn-editor-tool" onclick="execEditorCommand('insertOrderedList')" title="Lista Numerada" style="background:none; border:none; color:#94a3b8; cursor:pointer; font-size:1rem; padding: 4px 8px; transition: color 0.2s;"><i class="fas fa-list-ol"></i></button>
-                        <span style="border-right: 1px solid var(--glass-border); height: 20px;"></span>
-                        <button type="button" class="btn-editor-tool" onclick="execEditorCommand('justifyLeft')" title="Alinhar à Esquerda" style="background:none; border:none; color:#94a3b8; cursor:pointer; font-size:1rem; padding: 4px 8px; transition: color 0.2s;"><i class="fas fa-align-left"></i></button>
-                        <button type="button" class="btn-editor-tool" onclick="execEditorCommand('justifyCenter')" title="Centralizar" style="background:none; border:none; color:#94a3b8; cursor:pointer; font-size:1rem; padding: 4px 8px; transition: color 0.2s;"><i class="fas fa-align-center"></i></button>
-                        <button type="button" class="btn-editor-tool" onclick="execEditorCommand('justifyRight')" title="Alinhar à Direita" style="background:none; border:none; color:#94a3b8; cursor:pointer; font-size:1rem; padding: 4px 8px; transition: color 0.2s;"><i class="fas fa-align-right"></i></button>
+                    <div id="editorToolbar" style="background: rgba(0,0,0,0.1); border-bottom: var(--border-style); padding: 0.6rem 1rem; display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+                        <button type="button" class="btn-editor-tool" onclick="execEditorCommand('bold')" title="Negrito" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-weight:bold; font-size:1.1rem; padding: 4px 8px; transition: color 0.2s;">B</button>
+                        <button type="button" class="btn-editor-tool" onclick="execEditorCommand('italic')" title="Itálico" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-style:italic; font-size:1.1rem; padding: 4px 8px; transition: color 0.2s;">I</button>
+                        <button type="button" class="btn-editor-tool" onclick="execEditorCommand('underline')" title="Sublinhado" style="background:none; border:none; color:var(--text-muted); cursor:pointer; text-decoration:underline; font-size:1.1rem; padding: 4px 8px; transition: color 0.2s;">U</button>
+                        <span style="border-right: var(--border-style); height: 20px;"></span>
+                        <button type="button" class="btn-editor-tool" onclick="execEditorCommand('insertUnorderedList')" title="Lista com Marcadores" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:1rem; padding: 4px 8px; transition: color 0.2s;"><i class="fas fa-list-ul"></i></button>
+                        <button type="button" class="btn-editor-tool" onclick="execEditorCommand('insertOrderedList')" title="Lista Numerada" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:1rem; padding: 4px 8px; transition: color 0.2s;"><i class="fas fa-list-ol"></i></button>
+                        <span style="border-right: var(--border-style); height: 20px;"></span>
+                        <button type="button" class="btn-editor-tool" onclick="execEditorCommand('justifyLeft')" title="Alinhar à Esquerda" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:1rem; padding: 4px 8px; transition: color 0.2s;"><i class="fas fa-align-left"></i></button>
+                        <button type="button" class="btn-editor-tool" onclick="execEditorCommand('justifyCenter')" title="Centralizar" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:1rem; padding: 4px 8px; transition: color 0.2s;"><i class="fas fa-align-center"></i></button>
+                        <button type="button" class="btn-editor-tool" onclick="execEditorCommand('justifyRight')" title="Alinhar à Direita" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:1rem; padding: 4px 8px; transition: color 0.2s;"><i class="fas fa-align-right"></i></button>
                     </div>
                     <!-- Editor box -->
-                    <div id="richEditor" contenteditable="true" style="min-height: 450px; max-height: 650px; overflow-y: auto; background: rgba(0, 0, 0, 0.2); padding: 1.8rem; outline: none; color: white; font-family: 'Inter', sans-serif; line-height: 1.6; text-align: left;"></div>
+                    <div id="richEditor" contenteditable="true" style="min-height: 450px; max-height: 650px; overflow-y: auto; background: var(--btn-sec-bg); padding: 1.8rem; outline: none; color: var(--text-color); font-family: 'Inter', sans-serif; line-height: 1.6; text-align: left;"></div>
                 </div>
                 
                 <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
