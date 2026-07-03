@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify, send_file
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from werkzeug.utils import secure_filename
-from models import Document, db
+from models import Document, Draft, db
 from services.ai_service import generate_content
 from services.pdf_service import create_document_pdf
 import os
@@ -73,6 +73,14 @@ def generate_document():
             file_path=output_path
         )
         db.session.add(doc)
+        
+        # If a draft ID was provided, delete the draft upon successful PDF generation
+        draft_id = request.form.get('draft_id') if not request.is_json else data.get('draft_id')
+        if draft_id:
+            draft = Draft.query.filter_by(id=int(draft_id), user_id=int(user_id)).first()
+            if draft:
+                db.session.delete(draft)
+
         db.session.commit()
 
         # Clean up temporary images
@@ -170,3 +178,110 @@ def delete_document(doc_id):
     db.session.commit()
 
     return jsonify({'message': 'Documento excluído com sucesso'}), 200
+
+
+@docs_bp.route('/draft/save', methods=['POST'])
+@jwt_required()
+def save_draft():
+    """Save or update a document draft."""
+    user_id = get_jwt_identity()
+    data = request.get_json()
+    
+    draft_id = data.get('id')
+    doc_type = data.get('type')
+    title = data.get('title')
+    content = data.get('content')
+    
+    if not doc_type or not title or content is None:
+        return jsonify({'message': 'Tipo de documento, título e conteúdo são obrigatórios'}), 400
+        
+    import json
+    content_str = json.dumps(content) if isinstance(content, (dict, list)) else str(content)
+    
+    if draft_id:
+        draft = Draft.query.filter_by(id=draft_id, user_id=int(user_id)).first()
+        if not draft:
+            return jsonify({'message': 'Rascunho não encontrado'}), 404
+        draft.title = title
+        draft.content_json = content_str
+        draft.type = doc_type
+    else:
+        draft = Draft(
+            user_id=int(user_id),
+            type=doc_type,
+            title=title,
+            content_json=content_str
+        )
+        db.session.add(draft)
+        
+    db.session.commit()
+    
+    return jsonify({
+        'message': 'Rascunho salvo com sucesso!',
+        'draft': {
+            'id': draft.id,
+            'type': draft.type,
+            'title': draft.title,
+            'updated_at': draft.updated_at.isoformat() + 'Z'
+        }
+    }), 200
+
+
+@docs_bp.route('/draft/list', methods=['GET'])
+@jwt_required()
+def list_drafts():
+    """List all drafts for the logged-in user."""
+    user_id = get_jwt_identity()
+    drafts = Draft.query.filter_by(user_id=int(user_id)).order_by(Draft.updated_at.desc()).all()
+    
+    return jsonify({
+        'drafts': [{
+            'id': d.id,
+            'type': d.type,
+            'title': d.title,
+            'updated_at': d.updated_at.isoformat() + 'Z'
+        } for d in drafts]
+    }), 200
+
+
+@docs_bp.route('/draft/<int:draft_id>', methods=['GET'])
+@jwt_required()
+def get_draft(draft_id):
+    """Retrieve a specific draft's content."""
+    user_id = get_jwt_identity()
+    draft = Draft.query.filter_by(id=draft_id, user_id=int(user_id)).first()
+    
+    if not draft:
+        return jsonify({'message': 'Rascunho não encontrado'}), 404
+        
+    import json
+    try:
+        content_dict = json.loads(draft.content_json)
+    except Exception:
+        content_dict = draft.content_json
+        
+    return jsonify({
+        'draft': {
+            'id': draft.id,
+            'type': draft.type,
+            'title': draft.title,
+            'content': content_dict,
+            'updated_at': draft.updated_at.isoformat() + 'Z'
+        }
+    }), 200
+
+
+@docs_bp.route('/draft/delete/<int:draft_id>', methods=['DELETE'])
+@jwt_required()
+def delete_draft(draft_id):
+    """Delete a specific draft."""
+    user_id = get_jwt_identity()
+    draft = Draft.query.filter_by(id=draft_id, user_id=int(user_id)).first()
+    
+    if not draft:
+        return jsonify({'message': 'Rascunho não encontrado'}), 404
+        
+    db.session.delete(draft)
+    db.session.commit()
+    
+    return jsonify({'message': 'Rascunho excluído com sucesso'}), 200

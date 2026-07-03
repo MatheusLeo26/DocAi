@@ -261,6 +261,12 @@
                 </a>
             </div>
 
+            <!-- Rascunhos -->
+            <div class="doc-section" id="drafts-section" style="display: none; margin-bottom: 3rem;">
+                <div class="section-title" style="color: #facc15 !important; display: flex; align-items: center; gap: 0.5rem;">⭐ Rascunhos Salvos</div>
+                <div class="doc-list" id="draft-list"></div>
+            </div>
+
             <!-- Document Library -->
             <div class="doc-section">
                 <div class="section-title">📄 Currículos</div>
@@ -310,11 +316,10 @@
 
         async function loadDocuments() {
             try {
+                // Load actual documents
                 const res = await authFetch('/api/docs/list');
-                if (!res) return;
-                const data = await res.json();
-
-                if (res.ok) {
+                if (res && res.ok) {
+                    const data = await res.json();
                     const resumes = data.documents.filter(d => d.type.startsWith('resume'));
                     const contracts = data.documents.filter(d => d.type === 'contract');
                     const reports = data.documents.filter(d => d.type === 'report');
@@ -323,8 +328,82 @@
                     renderDocList('contract-list', contracts);
                     renderDocList('report-list', reports);
                 }
+                
+                // Load drafts
+                loadDrafts();
             } catch (err) {
                 console.error('Erro ao carregar documentos:', err);
+            }
+        }
+
+        async function loadDrafts() {
+            try {
+                const res = await authFetch('/api/docs/draft/list');
+                if (res && res.ok) {
+                    const data = await res.json();
+                    const draftsSec = document.getElementById('drafts-section');
+                    const draftsList = document.getElementById('draft-list');
+                    
+                    if (data.drafts && data.drafts.length > 0) {
+                        draftsSec.style.display = 'block';
+                        draftsList.innerHTML = data.drafts.map(draft => {
+                            return `
+                                <div class="doc-item" style="border-left: 4px solid #facc15 !important;">
+                                    <div class="doc-info">
+                                        <h4>${draft.title} <span style="font-size: 0.75rem; background: rgba(250,204,21,0.15); color: #eab308; padding: 0.2rem 0.5rem; border-radius: 20px; margin-left: 0.5rem; font-weight: 500;">Rascunho</span></h4>
+                                        <span>Última alteração: ${new Date(draft.updated_at).toLocaleDateString('pt-BR')} às ${new Date(draft.updated_at).toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})}</span>
+                                    </div>
+                                    <div class="doc-actions">
+                                        <button onclick="resumeDraft(${draft.id}, '${draft.type}')" style="background: rgba(250, 204, 21, 0.1) !important; color: #eab308 !important; border-color: rgba(250, 204, 21, 0.3) !important;">✍️ Editar</button>
+                                        <button class="delete-btn" onclick="deleteDraft(${draft.id})">🗑 Excluir</button>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+                    } else {
+                        draftsSec.style.display = 'none';
+                        draftsList.innerHTML = '';
+                    }
+                }
+            } catch (err) {
+                console.error('Erro ao carregar rascunhos:', err);
+            }
+        }
+
+        function resumeDraft(id, type) {
+            window.location.href = `/create/${type}?draft_id=${id}`;
+        }
+
+        async function deleteDraft(id) {
+            const result = await Swal.fire({
+                title: 'Excluir rascunho?',
+                text: "Você perderá as informações salvas neste rascunho!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#3b82f6',
+                confirmButtonText: 'Sim, excluir!',
+                cancelButtonText: 'Cancelar',
+                background: 'var(--glass-bg)',
+                color: '#fff',
+                backdrop: `rgba(0,0,0,0.8)`
+            });
+
+            if (result.isConfirmed) {
+                const res = await authFetch(`/api/docs/draft/delete/${id}`, { method: 'DELETE' });
+                if (res && res.ok) {
+                    Swal.fire({
+                        title: 'Excluído!',
+                        text: 'O rascunho foi apagado.',
+                        icon: 'success',
+                        background: 'var(--glass-bg)',
+                        color: '#fff',
+                        confirmButtonColor: '#3b82f6',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                    loadDrafts();
+                }
             }
         }
 

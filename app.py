@@ -26,5 +26,6 @@ def create_app(config_class=Config):
 if __name__ == '__main__':
     app = create_app()
     with app.app_context():
-        pass
+        import models
+        db.create_all()
     app.run(host='0.0.0.0', port=5000, debug=True)

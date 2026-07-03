@@ -35,6 +35,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
     <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
     <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         .create-container {
             display: flex;
@@ -658,7 +659,10 @@
                         </div>
                         <div class="pasted-images" id="resume-pasted-images"></div>
                     </div>
-                    <button type="submit" class="generate-btn">🤖 Gerar Currículo com IA</button>
+                    <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                        <button type="button" class="btn-secondary" onclick="saveDraftToDB()" style="flex: 1; padding: 1rem;">💾 Salvar Rascunho</button>
+                        <button type="submit" class="generate-btn" style="flex: 2; margin-top: 0;">🤖 Gerar Currículo com IA</button>
+                    </div>
                 </form>
             </div>
 
@@ -975,7 +979,10 @@
                         </div>
                         <div class="pasted-images" id="contract-pasted-images"></div>
                     </div>
-                    <button type="button" class="generate-btn" onclick="previewContract()">👁️ Revisar e Gerar Contrato</button>
+                    <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                        <button type="button" class="btn-secondary" onclick="saveDraftToDB()" style="flex: 1; padding: 1rem;">💾 Salvar Rascunho</button>
+                        <button type="button" class="generate-btn" onclick="previewContract()" style="flex: 2; margin-top: 0;">👁️ Revisar e Gerar Contrato</button>
+                    </div>
                 </form>
             </div>
             <!-- REPORT FORM -->
@@ -1014,7 +1021,10 @@
                         <div class="pasted-images" id="report-pasted-images"></div>
                         <div class="hint">Anexe gráficos, fotos de planilhas ou notas de reuniões para a IA processar.</div>
                     </div>
-                    <button type="submit" class="generate-btn">🤖 Gerar Relatório com IA</button>
+                    <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                        <button type="button" class="btn-secondary" onclick="saveDraftToDB()" style="flex: 1; padding: 1rem;">💾 Salvar Rascunho</button>
+                        <button type="submit" class="generate-btn" style="flex: 2; margin-top: 0;">🤖 Gerar Relatório com IA</button>
+                    </div>
                 </form>
             </div>
 
@@ -1051,6 +1061,323 @@
     <script>
         const DOC_TYPE = "{{ doc_type }}";
         const TITLES = { resume: 'Criar Currículo', contract: 'Criar Contrato', report: 'Criar Relatório' };
+        let currentDraftId = null;
+
+        function getFieldValue(id) {
+            const el = document.getElementById(id);
+            return el ? el.value : '';
+        }
+
+        function setFieldValue(id, val) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.value = val || '';
+                el.dispatchEvent(new Event('input', { bubbles: true }));
+                el.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        }
+
+        function serializeForm() {
+            const data = {};
+            if (DOC_TYPE === 'resume') {
+                data.language = getFieldValue('resume-language');
+                data.template = getFieldValue('resume-template');
+                data.title = getFieldValue('resume-title');
+                data.name = getFieldValue('resume-name');
+                data.email = getFieldValue('resume-email');
+                data.phone = getFieldValue('resume-phone');
+                data.linkedin = getFieldValue('resume-linkedin');
+                data.github = getFieldValue('resume-github');
+                data.portfolio = getFieldValue('resume-portfolio');
+                data.city = getFieldValue('resume-city');
+                data.objective = getFieldValue('resume-objective');
+                data.experience = getFieldValue('resume-experience');
+                data.education = getFieldValue('resume-education');
+                data.skills = getFieldValue('resume-skills');
+                data.suggestions = getFieldValue('resume-suggestions');
+            } else if (DOC_TYPE === 'contract') {
+                data.template = getFieldValue('contract-template');
+                data.title = getFieldValue('contract-title');
+                data.suggestions = getFieldValue('contract-suggestions');
+                
+                data.party1_type = document.querySelector('input[name="contract-party1-type"]:checked')?.value || 'pf';
+                data.party1_name = getFieldValue('contract-party1-name');
+                data.party1_doc1 = getFieldValue('contract-party1-doc1');
+                data.party1_doc2 = getFieldValue('contract-party1-doc2');
+                data.party1_email = getFieldValue('contract-party1-email');
+                data.party1_address = getFieldValue('contract-party1-address');
+                data.party1_city = getFieldValue('contract-party1-city');
+                data.party1_state = getFieldValue('contract-party1-state');
+                data.party1_zip = getFieldValue('contract-party1-zip');
+                data.party1_rep_name = getFieldValue('contract-party1-rep-name');
+                data.party1_rep_role = getFieldValue('contract-party1-rep-role');
+                
+                data.party2_type = document.querySelector('input[name="contract-party2-type"]:checked')?.value || 'pf';
+                data.party2_name = getFieldValue('contract-party2-name');
+                data.party2_doc1 = getFieldValue('contract-party2-doc1');
+                data.party2_doc2 = getFieldValue('contract-party2-doc2');
+                data.party2_email = getFieldValue('contract-party2-email');
+                data.party2_address = getFieldValue('contract-party2-address');
+                data.party2_city = getFieldValue('contract-party2-city');
+                data.party2_state = getFieldValue('contract-party2-state');
+                data.party2_zip = getFieldValue('contract-party2-zip');
+                data.party2_rep_name = getFieldValue('contract-party2-rep-name');
+                data.party2_rep_role = getFieldValue('contract-party2-rep-role');
+                
+                data.foro = getFieldValue('contract-foro');
+                data.object = getFieldValue('contract-object');
+                
+                data.nda_divulgadora = getFieldValue('nda-divulgadora');
+                data.nda_receptora = getFieldValue('nda-receptora');
+                data.nda_doc_divulgadora = getFieldValue('nda-doc-divulgadora');
+                data.nda_doc_receptora = getFieldValue('nda-doc-receptora');
+                data.nda_prazo = getFieldValue('nda-prazo');
+                data.nda_objeto = getFieldValue('nda-objeto');
+                data.nda_penalidade = getFieldValue('nda-penalidade');
+                data.nda_foro = getFieldValue('nda-foro');
+                
+                data.lgpd_empresa = getFieldValue('lgpd-empresa');
+                data.lgpd_cnpj = getFieldValue('lgpd-cnpj');
+                data.lgpd_url = getFieldValue('lgpd-url');
+                data.lgpd_dpo = getFieldValue('lgpd-dpo');
+                data.lgpd_dados = getFieldValue('lgpd-dados');
+                data.lgpd_finalidade = getFieldValue('lgpd-finalidade');
+                data.lgpd_foro = getFieldValue('lgpd-foro');
+                
+                data.clauses = Array.from(document.querySelectorAll('.contract-clause')).map(cb => {
+                    const subId = cb.getAttribute('data-sub');
+                    const subVal = subId ? document.querySelector(`#${subId} input`)?.value : '';
+                    return {
+                        value: cb.value,
+                        checked: cb.checked,
+                        subId: subId,
+                        subVal: subVal
+                    };
+                });
+            } else if (DOC_TYPE === 'report') {
+                data.title = getFieldValue('report-title');
+                data.company = getFieldValue('report-company');
+                data.period = getFieldValue('report-period');
+                data.data_content = getFieldValue('report-data');
+                data.suggestions = getFieldValue('report-suggestions');
+            }
+            return data;
+        }
+
+        function deserializeForm(data) {
+            if (!data) return;
+            
+            if (DOC_TYPE === 'resume') {
+                setFieldValue('resume-language', data.language);
+                setFieldValue('resume-template', data.template);
+                if (data.template) {
+                    const card = document.querySelector(`.template-card[data-template="${data.template}"]`);
+                    if (card) selectTemplate(card);
+                }
+                setFieldValue('resume-title', data.title);
+                setFieldValue('resume-name', data.name);
+                setFieldValue('resume-email', data.email);
+                setFieldValue('resume-phone', data.phone);
+                setFieldValue('resume-linkedin', data.linkedin);
+                setFieldValue('resume-github', data.github);
+                setFieldValue('resume-portfolio', data.portfolio);
+                setFieldValue('resume-city', data.city);
+                setFieldValue('resume-objective', data.objective);
+                setFieldValue('resume-experience', data.experience);
+                setFieldValue('resume-education', data.education);
+                setFieldValue('resume-skills', data.skills);
+                setFieldValue('resume-suggestions', data.suggestions);
+            } else if (DOC_TYPE === 'contract') {
+                setFieldValue('contract-template', data.template);
+                if (data.template) {
+                    const card = document.querySelector(`.template-card[data-template="${data.template}"]`);
+                    if (card) selectContractTemplate(card);
+                }
+                setFieldValue('contract-title', data.title);
+                setFieldValue('contract-suggestions', data.suggestions);
+                
+                const p1Radio = document.querySelector(`input[name="contract-party1-type"][value="${data.party1_type || 'pf'}"]`);
+                if (p1Radio) {
+                    p1Radio.checked = true;
+                    togglePJ('party1', data.party1_type === 'pj');
+                }
+                setFieldValue('contract-party1-name', data.party1_name);
+                setFieldValue('contract-party1-doc1', data.party1_doc1);
+                setFieldValue('contract-party1-doc2', data.party1_doc2);
+                setFieldValue('contract-party1-email', data.party1_email);
+                setFieldValue('contract-party1-address', data.party1_address);
+                setFieldValue('contract-party1-city', data.party1_city);
+                setFieldValue('contract-party1-state', data.party1_state);
+                setFieldValue('contract-party1-zip', data.party1_zip);
+                setFieldValue('contract-party1-rep-name', data.party1_rep_name);
+                setFieldValue('contract-party1-rep-role', data.party1_rep_role);
+                
+                const p2Radio = document.querySelector(`input[name="contract-party2-type"][value="${data.party2_type || 'pf'}"]`);
+                if (p2Radio) {
+                    p2Radio.checked = true;
+                    togglePJ('party2', data.party2_type === 'pj');
+                }
+                setFieldValue('contract-party2-name', data.party2_name);
+                setFieldValue('contract-party2-doc1', data.party2_doc1);
+                setFieldValue('contract-party2-doc2', data.party2_doc2);
+                setFieldValue('contract-party2-email', data.party2_email);
+                setFieldValue('contract-party2-address', data.party2_address);
+                setFieldValue('contract-party2-city', data.party2_city);
+                setFieldValue('contract-party2-state', data.party2_state);
+                setFieldValue('contract-party2-zip', data.party2_zip);
+                setFieldValue('contract-party2-rep-name', data.party2_rep_name);
+                setFieldValue('contract-party2-rep-role', data.party2_rep_role);
+                
+                setFieldValue('contract-foro', data.foro);
+                setFieldValue('contract-object', data.object);
+                
+                setFieldValue('nda-divulgadora', data.nda_divulgadora);
+                setFieldValue('nda-receptora', data.nda_receptora);
+                setFieldValue('nda-doc-divulgadora', data.nda_doc_divulgadora);
+                setFieldValue('nda-doc-receptora', data.nda_doc_receptora);
+                setFieldValue('nda-prazo', data.nda_prazo);
+                setFieldValue('nda-objeto', data.nda_objeto);
+                setFieldValue('nda-penalidade', data.nda_penalidade);
+                setFieldValue('nda-foro', data.nda_foro);
+                
+                setFieldValue('lgpd-empresa', data.lgpd_empresa);
+                setFieldValue('lgpd-cnpj', data.lgpd_cnpj);
+                setFieldValue('lgpd-url', data.lgpd_url);
+                setFieldValue('lgpd-dpo', data.lgpd_dpo);
+                setFieldValue('lgpd-dados', data.lgpd_dados);
+                setFieldValue('lgpd-finalidade', data.lgpd_finalidade);
+                setFieldValue('lgpd-foro', data.lgpd_foro);
+                
+                if (data.clauses && Array.isArray(data.clauses)) {
+                    data.clauses.forEach(clause => {
+                        const cb = Array.from(document.querySelectorAll('.contract-clause')).find(c => c.value === clause.value);
+                        if (cb) {
+                            cb.checked = clause.checked;
+                            toggleClauseSubInput(cb, clause.subId);
+                            if (clause.subId && clause.subVal) {
+                                const input = document.querySelector(`#${clause.subId} input`);
+                                if (input) input.value = clause.subVal;
+                            }
+                        }
+                    });
+                }
+            } else if (DOC_TYPE === 'report') {
+                setFieldValue('report-title', data.title);
+                setFieldValue('report-company', data.company);
+                setFieldValue('report-period', data.period);
+                setFieldValue('report-data', data.data_content);
+                setFieldValue('report-suggestions', data.suggestions);
+            }
+        }
+
+        const showAutosaveIndicator = () => {
+            let indicator = document.getElementById('autosave-indicator');
+            if (!indicator) {
+                indicator = document.createElement('span');
+                indicator.id = 'autosave-indicator';
+                indicator.className = 'autosave-badge';
+                indicator.style.fontSize = '0.8rem';
+                indicator.style.color = '#10b981';
+                indicator.style.marginLeft = '1rem';
+                indicator.style.opacity = '0';
+                indicator.style.transition = 'opacity 0.3s ease';
+                indicator.innerHTML = '<i class="fas fa-check-circle"></i> Salvo localmente';
+                document.getElementById('pageTitle').parentNode.appendChild(indicator);
+            }
+            indicator.style.opacity = '1';
+            setTimeout(() => {
+                indicator.style.opacity = '0';
+            }, 2000);
+        };
+
+        let autosaveTimeout = null;
+        function triggerAutosave() {
+            if (autosaveTimeout) clearTimeout(autosaveTimeout);
+            autosaveTimeout = setTimeout(() => {
+                const data = serializeForm();
+                localStorage.setItem(`docai_autosave_${DOC_TYPE}`, JSON.stringify(data));
+                showAutosaveIndicator();
+            }, 1000);
+        }
+
+        function bindAutosaveListeners() {
+            let formId = 'resumeForm';
+            if (DOC_TYPE === 'contract') formId = 'contractForm';
+            else if (DOC_TYPE === 'report') formId = 'reportForm';
+            
+            const form = document.getElementById(formId);
+            if (form) {
+                form.addEventListener('input', triggerAutosave);
+                form.addEventListener('change', triggerAutosave);
+            }
+        }
+
+        async function saveDraftToDB() {
+            const data = serializeForm();
+            let title = data.title || '';
+            
+            if (!title) {
+                const result = await Swal.fire({
+                    title: 'Salvar Rascunho',
+                    input: 'text',
+                    inputLabel: 'Dê um nome para este rascunho:',
+                    inputValue: `Rascunho ${new Date().toLocaleDateString('pt-BR')}`,
+                    showCancelButton: true,
+                    confirmButtonText: 'Salvar',
+                    cancelButtonText: 'Cancelar',
+                    background: 'var(--glass-bg)',
+                    color: '#fff',
+                    confirmButtonColor: '#3b82f6',
+                    inputValidator: (value) => {
+                        if (!value) return 'Você precisa digitar um título!';
+                    }
+                });
+                
+                if (!result.isConfirmed) return;
+                title = result.value;
+                
+                const titleFieldId = DOC_TYPE + '-title';
+                setFieldValue(titleFieldId, title);
+                data.title = title;
+            }
+            
+            const payload = {
+                id: currentDraftId,
+                type: DOC_TYPE,
+                title: title,
+                content: data
+            };
+            
+            try {
+                const res = await authFetch('/api/docs/draft/save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (res && res.ok) {
+                    const result = await res.json();
+                    currentDraftId = result.draft.id;
+                    
+                    localStorage.removeItem(`docai_autosave_${DOC_TYPE}`);
+                    
+                    Swal.fire({
+                        title: 'Rascunho Salvo!',
+                        text: 'Você pode continuar editando ou acessá-lo mais tarde no Dashboard.',
+                        icon: 'success',
+                        background: 'var(--glass-bg)',
+                        color: '#fff',
+                        confirmButtonColor: '#3b82f6',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                } else {
+                    alert('Erro ao salvar rascunho');
+                }
+            } catch (err) {
+                alert('Erro ao conectar com o servidor: ' + err.message);
+            }
+        }
 
         document.addEventListener('DOMContentLoaded', () => {
             const token = localStorage.getItem('token');
@@ -1071,6 +1398,47 @@
                 localStorage.removeItem('token');
                 window.location.href = '/login';
             });
+
+            // Parse URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const draftId = urlParams.get('draft_id');
+
+            if (draftId) {
+                currentDraftId = parseInt(draftId);
+                authFetch(`/api/docs/draft/${currentDraftId}`)
+                    .then(res => res ? res.json() : null)
+                    .then(data => {
+                        if (data && data.draft) {
+                            deserializeForm(data.draft.content);
+                        }
+                        bindAutosaveListeners();
+                    });
+            } else {
+                const hasLocal = localStorage.getItem(`docai_autosave_${DOC_TYPE}`);
+                if (hasLocal) {
+                    Swal.fire({
+                        title: 'Rascunho restaurável',
+                        text: 'Deseja restaurar as informações digitadas na última sessão?',
+                        icon: 'info',
+                        showCancelButton: true,
+                        confirmButtonText: 'Sim, restaurar',
+                        cancelButtonText: 'Não, começar do zero',
+                        background: 'var(--glass-bg)',
+                        color: '#fff',
+                        confirmButtonColor: '#3b82f6'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            const localData = JSON.parse(hasLocal);
+                            deserializeForm(localData);
+                        } else {
+                            localStorage.removeItem(`docai_autosave_${DOC_TYPE}`);
+                        }
+                        bindAutosaveListeners();
+                    });
+                } else {
+                    bindAutosaveListeners();
+                }
+            }
         });
 
         function toggleClauseSubInput(checkbox, targetId) {
@@ -1300,6 +1668,9 @@
             formData.append('type', 'contract');
             formData.append('title', title);
             formData.append('data', data);
+            if (currentDraftId) {
+                formData.append('draft_id', currentDraftId);
+            }
 
             const filesInput = document.getElementById('contract-images');
             if (filesInput && filesInput.files.length > 0) {
@@ -1326,6 +1697,7 @@
                 document.getElementById('loadingOverlay').classList.remove('show');
                 const {ok, result} = obj;
                 if (ok) {
+                    localStorage.removeItem(`docai_autosave_${DOC_TYPE}`);
                     document.getElementById('form-contract').style.display = 'none';
                     document.getElementById('successMsg').style.display = 'block';
                     document.getElementById('downloadLink').href = `/api/docs/download/${result.document.id}`;
@@ -1420,6 +1792,9 @@
             formData.append('type', finalDocType);
             formData.append('title', title);
             formData.append('data', data);
+            if (currentDraftId) {
+                formData.append('draft_id', currentDraftId);
+            }
 
             // Collect files from file input
             let filesInput = null;
@@ -1456,6 +1831,7 @@
                 document.getElementById('loadingOverlay').classList.remove('show');
 
                 if (res.ok) {
+                    localStorage.removeItem(`docai_autosave_${DOC_TYPE}`);
                     document.getElementById('form-' + DOC_TYPE).style.display = 'none';
                     document.getElementById('successMsg').style.display = 'block';
                     document.getElementById('downloadLink').href = `/api/docs/download/${result.document.id}`;

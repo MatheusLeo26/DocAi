@@ -28,3 +28,19 @@ class Document(db.Model):
         self.title = title
         self.file_path = file_path
         super().__init__(**kwargs)
+
+class Draft(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    type = db.Column(db.String(50), nullable=False) # e.g. 'resume', 'contract', 'report'
+    title = db.Column(db.String(255), nullable=False)
+    content_json = db.Column(db.Text, nullable=False) # Stores stringified form fields JSON
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def __init__(self, user_id: int, type: str, title: str, content_json: str, **kwargs):
+        self.user_id = user_id
+        self.type = type
+        self.title = title
+        self.content_json = content_json
+        super().__init__(**kwargs)
+
