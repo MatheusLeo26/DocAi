@@ -187,12 +187,43 @@ def get_document_content(doc_id):
     if not doc:
         return jsonify({'message': 'Documento não encontrado'}), 404
 
+    content = doc.content_html
+    if not content:
+        # Fallback: Extract text from PDF file if content_html is not stored yet
+        if os.path.exists(doc.file_path):
+            try:
+                import fitz
+                pdf = fitz.open(doc.file_path)
+                text_blocks = []
+                for page in pdf:
+                    text_blocks.append(page.get_text("text"))
+                pdf.close()
+                
+                raw_text = "\n".join(text_blocks)
+                # Convert plain text to simple paragraphs/headings HTML
+                paragraphs = raw_text.split('\n')
+                html_parts = []
+                for p in paragraphs:
+                    p_clean = p.strip()
+                    if not p_clean:
+                        continue
+                    if p_clean.isupper() and len(p_clean) < 100:
+                        html_parts.append(f"<h3>{p_clean}</h3>")
+                    else:
+                        html_parts.append(f"<p>{p_clean}</p>")
+                content = "".join(html_parts)
+            except Exception as e:
+                print(f"Erro ao extrair texto do PDF: {e}")
+                content = "<p>Erro ao ler o documento original do PDF. Por favor, redija ou gere novamente.</p>"
+        else:
+            content = "<p>O arquivo PDF não foi encontrado no servidor e não possui conteúdo em cache.</p>"
+
     return jsonify({
         'document': {
             'id': doc.id,
             'type': doc.type,
             'title': doc.title,
-            'content_html': doc.content_html or ''
+            'content_html': content
         }
     }), 200
 
