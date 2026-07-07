@@ -5,11 +5,11 @@
    Dark theme (default)
    ────────────────────────────────────────────── */
 :root {
-  --bg-color: #0f172a;
+  --bg-color: #040914;
   --text-color: #f8fafc;
   --text-muted: #94a3b8;
-  --glass-bg: rgba(15, 23, 42, 0.45);
-  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-bg: rgba(10, 15, 30, 0.4);
+  --glass-border: rgba(255, 255, 255, 0.05);
   --primary: #60a5fa;
   --secondary: #a5b4fc;
   --card-text: #ffffff;
@@ -183,20 +183,28 @@ body {
   border-right: 1px solid rgba(148, 163, 184, 0.2) !important;
 }
 
-[data-theme="light"] .action-card {
+[data-theme="light"] .bento-card {
   background: rgba(255, 255, 255, 0.72) !important;
   border-color: rgba(148, 163, 184, 0.2) !important;
   color: #1e293b !important;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04) !important;
 }
 
-[data-theme="light"] .action-card:hover {
+[data-theme="light"] .bento-card:hover {
   box-shadow: 0 15px 30px rgba(37, 99, 235, 0.1) !important;
   border-color: var(--primary) !important;
 }
 
-[data-theme="light"] .action-card p {
+[data-theme="light"] .bento-card p {
   color: #64748b !important;
+}
+
+[data-theme="light"] .highlight-contract {
+  background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(59,130,246,0.1) 100%) !important;
+}
+
+[data-theme="light"] .highlight-resume {
+  background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(139,92,246,0.1) 100%) !important;
 }
 
 [data-theme="light"] .doc-item {
@@ -254,13 +262,16 @@ body {
   font-weight: 600;
 }
 
-.action-card {
+.bento-card {
   background: var(--glass-bg) !important;
   border: var(--border-style) !important;
   color: var(--card-text) !important;
+  text-decoration: none !important;
+  border-radius: 20px !important;
+  overflow: hidden !important;
 }
 
-.action-card p {
+.bento-card p {
   color: var(--text-muted) !important;
 }
 
@@ -362,3 +373,69 @@ label {
 .auth-box h2 {
   color: var(--text-color) !important;
 }
+
+/* ──────────────────────────────────────────────
+   Light mode premium card, search, editor & modal overrides
+   ────────────────────────────────────────────── */
+
+[data-theme="light"] .template-card {
+  background: rgba(255, 255, 255, 0.72) !important;
+  border-color: rgba(148, 163, 184, 0.2) !important;
+  color: #1e293b !important;
+}
+
+[data-theme="light"] .template-card h4 {
+  color: #1e293b !important;
+}
+
+[data-theme="light"] .template-card p {
+  color: #64748b !important;
+}
+
+[data-theme="light"] .template-card.active {
+  background: rgba(37, 99, 235, 0.08) !important;
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 15px rgba(37, 99, 235, 0.15) !important;
+}
+
+[data-theme="light"] .contract-search {
+  background: rgba(15, 23, 42, 0.04) !important;
+  color: #1e293b !important;
+}
+
+[data-theme="light"] .preview-content {
+  color: #1e293b !important;
+}
+
+[data-theme="light"] .preview-content h3 {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .preview-text {
+  background: rgba(0, 0, 0, 0.04) !important;
+  color: #334155 !important;
+}
+
+[data-theme="light"] .btn-cancel {
+  border-color: rgba(148, 163, 184, 0.3) !important;
+  color: #334155 !important;
+}
+
+[data-theme="light"] .btn-cancel:hover {
+  background: rgba(15, 23, 42, 0.06) !important;
+}
+
+[data-theme="light"] .pages-grid {
+  background: rgba(15, 23, 42, 0.03) !important;
+}
+
+[data-theme="light"] .page-card {
+  background: rgba(255, 255, 255, 0.72) !important;
+  border-color: rgba(148, 163, 184, 0.2) !important;
+}
+
+[data-theme="light"] .page-card:hover {
+  background: rgba(255, 255, 255, 0.9) !important;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05) !important;
+}
+

@@ -29,31 +29,34 @@ body {
     height: 100vh;
     z-index: -1;
     overflow: hidden;
+    background: radial-gradient(circle at 50% 50%, var(--bg-color) 0%, #020617 100%);
 }
 
 .blob {
     position: absolute;
-    filter: blur(80px);
-    opacity: 0.5;
+    filter: blur(100px);
+    opacity: 0.45;
     border-radius: 50%;
-    animation: float 10s infinite alternate ease-in-out;
+    animation: float 15s infinite alternate ease-in-out;
+    mix-blend-mode: screen;
+    pointer-events: none;
 }
 
 .blob-1 {
-    top: -10%;
+    top: -20%;
     left: -10%;
-    width: 50vw;
-    height: 50vw;
-    background: radial-gradient(circle, var(--primary), transparent 70%);
+    width: 60vw;
+    height: 60vw;
+    background: radial-gradient(circle, rgba(59,130,246,0.25), transparent 70%);
 }
 
 .blob-2 {
-    bottom: -10%;
+    bottom: -20%;
     right: -10%;
-    width: 40vw;
-    height: 40vw;
-    background: radial-gradient(circle, var(--secondary), transparent 70%);
-    animation-delay: -5s;
+    width: 70vw;
+    height: 70vw;
+    background: radial-gradient(circle, rgba(139,92,246,0.2), transparent 70%);
+    animation-delay: -7s;
 }
 
 @keyframes float {
@@ -141,6 +144,7 @@ body {
 .gradient-text {
     background: linear-gradient(135deg, var(--primary), var(--secondary));
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 

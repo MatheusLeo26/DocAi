@@ -83,6 +83,16 @@ DIRETRIZES OBRIGATÓRIAS:
 5. DETECÇÃO DE PEJOTIZAÇÃO (MITIGAÇÃO DE RISCO TRABALHISTA): Se você detectar que o contrato estabelece uma relação de prestação de serviços ou freelancer com características que possam assemelhar-se a um emprego tradicional (habitualidade, subordinação, dependência econômica) ou se a parte contratada for explicitamente qualificada como MEI (Microempreendedor Individual) ou Pessoa Física autônoma, você DEVE incluir automaticamente uma cláusula/seção robusta de "Declaração de Autonomia e Termo de Responsabilidade/Indenização Trabalhista". Esta cláusula deve isentar a Contratante de qualquer responsabilidade previdenciária ou trabalhista e estabelecer direito de regresso absoluto contra a Contratada caso a Contratante seja acionada na Justiça do Trabalho.
 6. Incorpore também quaisquer orientações de "Sugestões Adicionais".
 
+REGRAS OBRIGATÓRIAS PARA O BLOCO DE ENCERRAMENTO E ASSINATURAS:
+1. O parágrafo final do corpo do contrato ("E, por estarem assim, justas e contratadas...") NÃO deve conter o local e a data. Encerre esse parágrafo com "...na presença das 02 (duas) testemunhas abaixo."
+2. Imediatamente após, em um NOVO parágrafo <p> isolado, coloque o local e a data no formato: "Cidade, DD de Mês de AAAA".
+3. NUNCA use caracteres de underline (___ ou ______) para representar linhas de assinatura.
+4. Para cada parte (Contratante e Contratada), crie os dados em parágrafos <p> separados e sequenciais com EXATAMENTE esta estrutura:
+   <p>NOME COMPLETO OU RAZÃO SOCIAL</p>
+   <p>CPF: 000.000.000-00</p>  (ou <p>CNPJ: 00.000.000/0001-00</p>)
+   <p>Representada por: Nome do Representante (Cargo)</p>  (apenas se PJ)
+   <p>CONTRATANTE</p>  (ou <p>CONTRATADA</p>)
+
 Use tags HTML para estruturar o conteúdo (h1, h2, h3, p, ul, li, etc). NÃO inclua tags <html>, <head> ou <body>.
 IMPORTANTE: NÃO use formatação Markdown (como **texto**). Se precisar destacar algo, use as tags HTML apropriadas (como <strong>texto</strong>).
 Retorne APENAS o HTML do conteúdo do contrato pronto para impressão, sem explicações adicionais.

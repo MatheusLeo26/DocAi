@@ -11,6 +11,32 @@ document.addEventListener('DOMContentLoaded', () => {
         gsap.registerPlugin(ScrollTrigger);
     }
 
+    // Initialize Lenis for Smooth Scrolling
+    let lenis;
+    if (typeof Lenis !== 'undefined') {
+        lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            direction: 'vertical',
+            gestureDirection: 'vertical',
+            smooth: true,
+        });
+
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
+
+        if (typeof ScrollTrigger !== 'undefined') {
+            lenis.on('scroll', ScrollTrigger.update);
+            gsap.ticker.add((time)=>{
+              lenis.raf(time * 1000);
+            });
+            gsap.ticker.lagSmoothing(0);
+        }
+    }
+
     // Kill any conflicting CSS animations on GSAP-managed elements
     document.querySelectorAll('.glass-panel, .feature-card').forEach(el => {
         el.style.animation = 'none';
@@ -180,18 +206,36 @@ function initDashboardAnimations() {
     // Sidebar items cascade
     gsap.fromTo('.sidebar .nav-item',
         { opacity: 0, x: -20 },
-        { opacity: 1, x: 0, stagger: 0.08, duration: 0.6, ease: "power2.out" }
+        { opacity: 1, x: 0, stagger: 0.08, duration: 0.6, ease: "power2.out", delay: 0.2 }
     );
 
-    // Content cards layout fade-in
-    gsap.fromTo('.dashboard-container .action-card, .dashboard-container .doc-item',
-        { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, stagger: 0.08, duration: 0.8, ease: "power3.out" }
+    // Bento cards layout fade-in
+    gsap.fromTo('.bento-card',
+        { opacity: 0, y: 30, scale: 0.95 },
+        { opacity: 1, y: 0, scale: 1, stagger: 0.1, duration: 0.8, ease: "back.out(1.5)", delay: 0.3 }
     );
+
+    // Document lists reveal on scroll
+    if (typeof ScrollTrigger !== 'undefined') {
+        gsap.set('.doc-item', { opacity: 0, y: 20 });
+        
+        ScrollTrigger.batch('.doc-item', {
+            onEnter: batch => gsap.to(batch, {
+                opacity: 1,
+                y: 0,
+                stagger: 0.05,
+                duration: 0.6,
+                ease: "power2.out",
+                overwrite: true
+            }),
+            once: true,
+            start: "top 90%"
+        });
+    }
 
     // Document creation form fields reveal
     gsap.fromTo('.form-section h3, .form-section .form-group',
         { opacity: 0, y: 15 },
-        { opacity: 1, y: 0, stagger: 0.05, duration: 0.6, ease: "power2.out" }
+        { opacity: 1, y: 0, stagger: 0.05, duration: 0.6, ease: "power2.out", delay: 0.3 }
     );
 }

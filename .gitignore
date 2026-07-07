@@ -10,6 +10,7 @@ instance/
 *.db
 *.sqlite
 uploads/
+backups/
 
 # Flutter/Dart
 .dart_tool/
