@@ -408,3 +408,28 @@ def generate_raw_content():
                 os.remove(path)
         return jsonify({'message': f'Erro ao gerar conteúdo: {str(e)}'}), 500
 
+
+@docs_bp.route('/smart-edit', methods=['POST'])
+@jwt_required()
+def smart_edit():
+    """Recebe o HTML atual e um prompt do usuário, retornando o HTML modificado pela IA."""
+    data = request.get_json()
+    if not data:
+        return jsonify({'message': 'Dados inválidos'}), 400
+        
+    html_content = data.get('content')
+    prompt = data.get('prompt')
+    
+    if not html_content or not prompt:
+        return jsonify({'message': 'Conteúdo e instrução são obrigatórios'}), 400
+        
+    try:
+        from services.ai_service import smart_edit_content
+        updated_html = smart_edit_content(html_content, prompt)
+        
+        return jsonify({
+            'message': 'Edição aplicada com sucesso!',
+            'content': updated_html
+        }), 200
+    except Exception as e:
+        return jsonify({'message': f'Erro ao processar edição inteligente: {str(e)}'}), 500

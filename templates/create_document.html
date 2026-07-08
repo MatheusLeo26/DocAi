@@ -1103,6 +1103,20 @@
                     <i class="fas fa-info-circle" style="color: var(--primary); margin-right: 0.5rem; font-size: 1rem;"></i>
                     Você está no modo de edição manual. Edite o texto abaixo conforme necessário e clique em <strong>Gerar PDF Final</strong> para compilar o arquivo com as suas alterações.
                 </div>
+
+                <!-- SMART EDIT BAR -->
+                <div class="smart-edit-bar" style="background: rgba(0, 0, 0, 0.2); border: 1px solid var(--primary); border-radius: 12px; padding: 1.2rem; margin-bottom: 1.5rem; display: flex; flex-direction: column; gap: 1rem; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.1);">
+                    <div style="display: flex; gap: 0.8rem; align-items: center; color: var(--primary); font-weight: 600;">
+                        <i class="fas fa-magic" style="font-size: 1.2rem;"></i>
+                        <span>Edição Inteligente com IA</span>
+                    </div>
+                    <textarea id="smartEditPrompt" placeholder="Ex: Melhore a descrição do último emprego, troque X por Y e adicione a habilidade de Liderança..." style="width: 100%; min-height: 80px; resize: vertical; padding: 1rem; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(0, 0, 0, 0.3); color: white; outline: none; font-size: 0.95rem; font-family: inherit; line-height: 1.5;" onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); applySmartEdit(); }"></textarea>
+                    <div style="display: flex; justify-content: flex-end; gap: 1rem; align-items: center;">
+                        <span style="font-size: 0.8rem; color: rgba(255,255,255,0.4);">Pressione Enter para enviar (Shift+Enter para quebra de linha)</span>
+                        <button type="button" id="smartEditBtn" onclick="applySmartEdit()" class="btn-primary" style="margin: 0; padding: 0.8rem 1.5rem; white-space: nowrap;"><i class="fas fa-sparkles" style="margin-right: 0.4rem;"></i> Atualizar com IA</button>
+                    </div>
+                </div>
+
                 
                 <div style="margin-bottom: 1.5rem; border-radius: 12px; overflow: visible; border: var(--border-style); position: relative;">
                     <!-- Editor toolbar -->
@@ -1198,6 +1212,7 @@
         const DOC_TYPE = "{{ doc_type }}";
         const TITLES = { resume: 'Criar Currículo', contract: 'Criar Contrato', report: 'Criar Relatório' };
         let currentDraftId = null;
+        let activeDocType = DOC_TYPE;
 
         function getFieldValue(id) {
             const el = document.getElementById(id);
@@ -1557,6 +1572,7 @@
                         document.getElementById('loadingOverlay').classList.remove('show');
                         if (data && data.document) {
                             const doc = data.document;
+                            activeDocType = doc.type;
                             
                             // Hide the input form
                             const formEl = document.getElementById('form-' + DOC_TYPE);
@@ -1997,6 +2013,8 @@
                     else finalDocType = 'resume';
                 }
             }
+            
+            activeDocType = finalDocType;
 
             const formData = new FormData();
             formData.append('type', finalDocType);
@@ -2030,8 +2048,8 @@
 
             document.getElementById('loadingOverlay').classList.add('show');
 
-            if (DOC_TYPE === 'report') {
-                document.getElementById('loadingOverlay').querySelector('.loading-text').textContent = 'A IA está gerando o relatório...';
+            if (DOC_TYPE === 'report' || DOC_TYPE === 'resume') {
+                document.getElementById('loadingOverlay').querySelector('.loading-text').textContent = DOC_TYPE === 'resume' ? 'A IA está gerando o currículo...' : 'A IA está gerando o relatório...';
                 try {
                     const res = await authFetch('/api/docs/generate-content', {
                         method: 'POST',
@@ -2043,7 +2061,7 @@
                     document.getElementById('loadingOverlay').classList.remove('show');
                     
                     if (res.ok && result.content) {
-                        document.getElementById('form-report').style.display = 'none';
+                        document.getElementById('form-' + DOC_TYPE).style.display = 'none';
                         const editMode = document.getElementById('editModeSection');
                         editMode.style.display = 'block';
                         
@@ -2057,13 +2075,14 @@
                             document.getElementById('editorStatus').style.display = 'none';
                         });
                     } else {
-                        alert(result.message || 'Erro ao gerar relatório');
+                        alert(result.message || 'Erro ao gerar conteúdo');
                     }
                 } catch (err) {
                     document.getElementById('loadingOverlay').classList.remove('show');
                     alert('Erro de conexão: ' + err.message);
                 }
             } else {
+                // Outros documentos (se ainda não migrados para o fluxo generate-content)
                 try {
                     const res = await authFetch('/api/docs/generate', {
                         method: 'POST',
@@ -2098,6 +2117,7 @@
                     document.getElementById('loadingOverlay').classList.remove('show');
                     alert('Erro de conexão: ' + err.message);
                 }
+
             }
         }
 
@@ -2244,12 +2264,14 @@
             let title = '';
             if (DOC_TYPE === 'contract') {
                 title = document.getElementById('contract-title').value;
+            } else if (DOC_TYPE === 'resume') {
+                title = document.getElementById('resume-title').value;
             } else {
                 title = document.getElementById('report-title').value;
             }
 
             const formData = new FormData();
-            formData.append('type', DOC_TYPE);
+            formData.append('type', activeDocType);
             formData.append('title', title);
             formData.append('data', 'edited_version');
             formData.append('edited_content', editedContentState);
@@ -2311,6 +2333,67 @@
             } catch (err) {
                 document.getElementById('loadingOverlay').classList.remove('show');
                 alert('Erro de conexão: ' + err.message);
+            }
+        }
+
+        // Smart Edit AI Function
+        async function applySmartEdit() {
+            const promptInput = document.getElementById('smartEditPrompt');
+            const prompt = promptInput.value.trim();
+            const btn = document.getElementById('smartEditBtn');
+            const editor = document.getElementById('richEditor');
+
+            if (!prompt) return;
+
+            // Change button state to loading
+            const originalBtnHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 0.4rem;"></i> Editando...';
+            btn.disabled = true;
+            promptInput.disabled = true;
+            
+            // Add a slight visual overlay to editor while loading
+            editor.style.opacity = '0.5';
+
+            try {
+                const res = await authFetch('/api/docs/smart-edit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        content: editor.innerHTML,
+                        prompt: prompt
+                    })
+                });
+
+                if (res && res.ok) {
+                    const result = await res.json();
+                    
+                    // Salvar o estado antes no histórico do executCommand para ctrl+Z nativo
+                    document.getElementById('richEditor').focus();
+                    document.execCommand('selectAll', false, null);
+                    document.execCommand('insertHTML', false, result.content);
+                    
+                    hasUnsavedEditorChanges = true;
+                    document.getElementById('editorStatus').style.display = 'none';
+                    promptInput.value = ''; // clear input
+                    
+                    // Show success status
+                    const status = document.getElementById('editorStatus');
+                    status.innerHTML = '<i class="fas fa-magic"></i> Edição Inteligente Aplicada';
+                    status.style.display = 'block';
+                    setTimeout(() => status.style.display = 'none', 4000);
+                } else {
+                    const error = res ? await res.json() : { message: 'Erro de conexão' };
+                    alert(error.message || 'Erro ao aplicar edição inteligente');
+                }
+            } catch (err) {
+                alert('Erro de conexão: ' + err.message);
+            } finally {
+                // Restore button state
+                btn.innerHTML = originalBtnHtml;
+                btn.disabled = false;
+                promptInput.disabled = false;
+                editor.style.opacity = '1';
+                promptInput.focus();
             }
         }
 

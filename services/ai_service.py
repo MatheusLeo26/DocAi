@@ -220,3 +220,66 @@ def generate_content(doc_type, user_data, image_paths=None):
     except requests.exceptions.ConnectionError:
         raise Exception("Não foi possível conectar ao Gemini (sem chave GEMINI_API_KEY) ou ao Ollama. Verifique se o Ollama está rodando ou defina GEMINI_API_KEY.")
 
+def smart_edit_content(html_content, prompt):
+    """
+    Recebe um HTML existente e um prompt de edição do usuário.
+    Usa IA para processar a edição e retorna o HTML modificado.
+    """
+    system_prompt = f"""Você é um assistente especializado em edição de documentos HTML profissionais (currículos, contratos, relatórios).
+Sua tarefa é receber um HTML existente e uma instrução de edição, e retornar o novo HTML com as alterações aplicadas.
+
+DIRETRIZES OBRIGATÓRIAS:
+1. Mantenha ESTRITAMENTE todas as tags HTML (incluindo estilos inline, classes, e estrutura) originais, a menos que a instrução exija modificar especificamente o layout ou estrutura.
+2. Aplique a mudança solicitada de forma profissional e natural no texto.
+3. Não retorne NENHUMA explicação, cumprimento ou texto em markdown. Retorne APENAS o código HTML final.
+4. NUNCA inclua tags <html>, <head> ou <body>. O conteúdo deve ser apenas os elementos internos (divs, h3, p, etc).
+
+INSTRUÇÃO DO USUÁRIO:
+{prompt}
+
+CÓDIGO HTML ORIGINAL:
+{html_content}"""
+
+    # Tenta usar o Gemini se disponível
+    gemini_key = os.environ.get("GEMINI_API_KEY")
+    if gemini_key:
+        try:
+            import google.generativeai as genai
+            genai.configure(api_key=gemini_key)
+            model = genai.GenerativeModel("gemini-2.5-flash")
+            
+            response = model.generate_content(system_prompt)
+            
+            text = response.text.strip()
+            if text.startswith("```html"):
+                text = text[7:]
+            if text.endswith("```"):
+                text = text[:-3]
+            return text.strip()
+        except Exception as e:
+            print(f"Erro ao usar Gemini para smart edit, tentando Ollama: {e}")
+
+    # Fallback para Ollama
+    try:
+        response = requests.post(OLLAMA_URL, json={
+            "model": MODEL_NAME,
+            "prompt": system_prompt,
+            "stream": False,
+            "options": {
+                "temperature": 0.5,
+                "num_predict": 4096
+            }
+        }, timeout=120)
+
+        if response.status_code == 200:
+            result = response.json()
+            text = result.get("response", "").strip()
+            if text.startswith("```html"):
+                text = text[7:]
+            if text.endswith("```"):
+                text = text[:-3]
+            return text.strip()
+        else:
+            raise Exception(f"Ollama error: {response.status_code} - {response.text}")
+    except requests.exceptions.ConnectionError:
+        raise Exception("Não foi possível conectar ao Gemini (sem chave) ou ao Ollama para executar a edição.")

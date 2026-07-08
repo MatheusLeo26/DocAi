@@ -547,7 +547,7 @@
             }
 
             container.innerHTML = docs.map(doc => {
-                const showEdit = (doc.type === 'contract' || doc.type === 'report');
+                const showEdit = true; // All document types can now be edited
                 const editButton = showEdit ? `<button onclick="editGeneratedDoc(${doc.id}, '${doc.type}')" style="background: rgba(59, 130, 246, 0.1) !important; color: #3b82f6 !important; border-color: rgba(59, 130, 246, 0.3) !important;">✍️ Editar</button>` : '';
                 return `
                     <div class="doc-item">
@@ -567,7 +567,9 @@
         }
 
         function editGeneratedDoc(id, type) {
-            window.location.href = `/create/${type}?doc_id=${id}`;
+            let baseType = type;
+            if (type.startsWith('resume')) baseType = 'resume';
+            window.location.href = `/create/${baseType}?doc_id=${id}`;
         }
 
         async function downloadDoc(id, title) {
