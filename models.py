@@ -1,6 +1,11 @@
 from extensions import db
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
+from sqlalchemy_utils import StringEncryptedType
+from sqlalchemy_utils.types.encrypted.encrypted_type import FernetEngine
+import os
+
+ENCRYPTION_KEY = os.environ.get('ENCRYPTION_KEY') or '0I6iUvDq9hVf0T3M9h7bL_wzR-H92bN7h1iH_jG4b3A='
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -20,7 +25,7 @@ class Document(db.Model):
     type = db.Column(db.String(50), nullable=False) # e.g. 'resume', 'contract', 'report'
     title = db.Column(db.String(255), nullable=False)
     file_path = db.Column(db.String(255), nullable=False)
-    content_html = db.Column(db.Text, nullable=True) # Stores the raw generated AI content (HTML)
+    content_html = db.Column(StringEncryptedType(db.Text, ENCRYPTION_KEY, FernetEngine), nullable=True) # Stores the raw generated AI content (HTML)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __init__(self, user_id: int, type: str, title: str, file_path: str, content_html: str = None, **kwargs):
@@ -36,7 +41,7 @@ class Draft(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     type = db.Column(db.String(50), nullable=False) # e.g. 'resume', 'contract', 'report'
     title = db.Column(db.String(255), nullable=False)
-    content_json = db.Column(db.Text, nullable=False) # Stores stringified form fields JSON
+    content_json = db.Column(StringEncryptedType(db.Text, ENCRYPTION_KEY, FernetEngine), nullable=False) # Stores stringified form fields JSON
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     def __init__(self, user_id: int, type: str, title: str, content_json: str, **kwargs):

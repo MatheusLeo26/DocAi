@@ -7,6 +7,7 @@ from services.pdf_service import create_document_pdf
 import os
 import uuid
 from datetime import datetime
+import bleach
 
 docs_bp = Blueprint('docs', __name__)
 
@@ -57,9 +58,22 @@ def generate_document():
         # Step 1: Generate professional content with AI or use edited_content
         edited_content = request.form.get('edited_content') if not request.is_json else data.get('edited_content')
         if edited_content:
-            ai_content = edited_content
+            raw_ai_content = edited_content
         else:
-            ai_content = generate_content(doc_type, user_data, temp_image_paths)
+            raw_ai_content = generate_content(doc_type, user_data, temp_image_paths)
+
+        # Sanitize HTML to prevent XSS
+        ALLOWED_TAGS = ['h1', 'h2', 'h3', 'h4', 'p', 'b', 'i', 'u', 'strong', 'em', 'br', 'span', 'div', 'ul', 'ol', 'li', 'table', 'tr', 'td', 'th', 'tbody', 'thead', 'style']
+        ALLOWED_ATTRS = {'*': ['style', 'class', 'id', 'align']}
+        ALLOWED_STYLES = ['text-align', 'color', 'background-color', 'font-size', 'font-weight', 'margin', 'padding', 'width', 'height', 'border', 'line-height']
+        
+        ai_content = bleach.clean(
+            raw_ai_content,
+            tags=ALLOWED_TAGS,
+            attributes=ALLOWED_ATTRS,
+            styles=ALLOWED_STYLES,
+            strip=True
+        )
 
         doc_id = request.form.get('doc_id') if not request.is_json else data.get('doc_id')
         doc = None
@@ -265,6 +279,19 @@ def save_draft():
         
     import json
     content_str = json.dumps(content) if isinstance(content, (dict, list)) else str(content)
+    
+    # Sanitize draft content (if it's HTML string inside json, or raw string)
+    ALLOWED_TAGS = ['h1', 'h2', 'h3', 'h4', 'p', 'b', 'i', 'u', 'strong', 'em', 'br', 'span', 'div', 'ul', 'ol', 'li', 'table', 'tr', 'td', 'th', 'tbody', 'thead', 'style']
+    ALLOWED_ATTRS = {'*': ['style', 'class', 'id', 'align']}
+    ALLOWED_STYLES = ['text-align', 'color', 'background-color', 'font-size', 'font-weight', 'margin', 'padding', 'width', 'height', 'border', 'line-height']
+    
+    content_str = bleach.clean(
+        content_str,
+        tags=ALLOWED_TAGS,
+        attributes=ALLOWED_ATTRS,
+        styles=ALLOWED_STYLES,
+        strip=True
+    )
     
     if draft_id:
         draft = Draft.query.filter_by(id=draft_id, user_id=int(user_id)).first()
