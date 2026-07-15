@@ -8,6 +8,7 @@ import os
 import uuid
 from datetime import datetime
 import bleach
+from bleach.css_sanitizer import CSSSanitizer
 
 docs_bp = Blueprint('docs', __name__)
 
@@ -66,12 +67,13 @@ def generate_document():
         ALLOWED_TAGS = ['h1', 'h2', 'h3', 'h4', 'p', 'b', 'i', 'u', 'strong', 'em', 'br', 'span', 'div', 'ul', 'ol', 'li', 'table', 'tr', 'td', 'th', 'tbody', 'thead', 'style']
         ALLOWED_ATTRS = {'*': ['style', 'class', 'id', 'align']}
         ALLOWED_STYLES = ['text-align', 'color', 'background-color', 'font-size', 'font-weight', 'margin', 'padding', 'width', 'height', 'border', 'line-height']
+        css_sanitizer = CSSSanitizer(allowed_css_properties=ALLOWED_STYLES)
         
         ai_content = bleach.clean(
             raw_ai_content,
             tags=ALLOWED_TAGS,
             attributes=ALLOWED_ATTRS,
-            styles=ALLOWED_STYLES,
+            css_sanitizer=css_sanitizer,
             strip=True
         )
 
@@ -284,12 +286,13 @@ def save_draft():
     ALLOWED_TAGS = ['h1', 'h2', 'h3', 'h4', 'p', 'b', 'i', 'u', 'strong', 'em', 'br', 'span', 'div', 'ul', 'ol', 'li', 'table', 'tr', 'td', 'th', 'tbody', 'thead', 'style']
     ALLOWED_ATTRS = {'*': ['style', 'class', 'id', 'align']}
     ALLOWED_STYLES = ['text-align', 'color', 'background-color', 'font-size', 'font-weight', 'margin', 'padding', 'width', 'height', 'border', 'line-height']
+    css_sanitizer = CSSSanitizer(allowed_css_properties=ALLOWED_STYLES)
     
     content_str = bleach.clean(
         content_str,
         tags=ALLOWED_TAGS,
         attributes=ALLOWED_ATTRS,
-        styles=ALLOWED_STYLES,
+        css_sanitizer=css_sanitizer,
         strip=True
     )
     
