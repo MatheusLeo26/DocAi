@@ -1,4 +1,4 @@
-# DocAi 🚀
+# DocAi 
 
 DocAi é um ecossistema completo para geração inteligente de documentos assistida por Inteligência Artificial (Ollama - Llama 3.2) e conversão de arquivos em múltiplos formatos (incluindo conversão profissional para o padrão arquivístico **PDF/A**). 
 
@@ -8,7 +8,7 @@ Este projeto é composto por:
 
 ---
 
-## ✨ Funcionalidades
+##  Funcionalidades
 
 ### 📑 Geração de Documentos por IA
 Gere documentos profissionais estruturados em segundos. O ecossistema envia dados brutos à IA local (Ollama) ou Gemini para a redação formal e gera PDFs diagramados via Playwright.
@@ -20,7 +20,7 @@ Gere documentos profissionais estruturados em segundos. O ecossistema envia dado
 *   **Biblioteca de Arquivos**: Gerencie seus documentos gerados (baixar ou excluir de forma dinâmica sem necessidade de recarregar a página, com interface SweetAlert2).
 *   **Pré-visualização**: Visualize os PDFs gerados diretamente na página da aplicação web através de um modal integrado, sem precisar fazer o download prévio do arquivo.
 
-### 🔄 Conversor de Arquivos Inteligente
+###  Conversor de Arquivos Inteligente
 Converta arquivos de forma local no servidor ou aplicativo móvel.
 *   **DOCX** ➔ **PDF** (mantendo cabeçalhos e formatações).
 *   **Imagens** (PNG, JPG, JFIF) ➔ Múltiplos formatos alternativos.
@@ -28,7 +28,7 @@ Converta arquivos de forma local no servidor ou aplicativo móvel.
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+##  Tecnologias Utilizadas
 
 ### Backend & Web
 *   **Python 3**
@@ -47,7 +47,7 @@ Converta arquivos de forma local no servidor ou aplicativo móvel.
 
 ---
 
-## 🚀 Como Executar o Projeto
+##  Como Executar o Projeto
 
 ### 1. Requisitos Prévios
 *   [Python 3.10+](https://www.python.org/)
@@ -106,7 +106,7 @@ Acesse a pasta `mobile/`:
 
 ---
 
-## 🔒 Segurança (JWT & Cookies)
+##  Segurança (JWT & Cookies)
 O ecossistema implementa boas práticas de segurança para o tráfego e armazenamento de credenciais de acordo com o cliente utilizado:
 
 *   **Versão Web (Navegador)**: A autenticação utiliza **Cookies HttpOnly e Secure** (`access_token_cookie`). Os tokens JWT de sessão não são expostos nem armazenados no `LocalStorage`, mitigando vulnerabilidades de roubo de sessão via XSS (Cross-Site Scripting).
