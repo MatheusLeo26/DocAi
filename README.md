@@ -10,13 +10,13 @@ Este projeto é composto por:
 
 ##  Funcionalidades
 
-### 📑 Geração de Documentos por IA
+###  Geração de Documentos por IA
 Gere documentos profissionais estruturados em segundos. O ecossistema envia dados brutos à IA local (Ollama) ou Gemini para a redação formal e gera PDFs diagramados via Playwright.
 *   **Currículos (Resumes)**: Agora com **Filtro e Otimização Inteligente de Recrutamento (ATS/Recruiter Friendly)** que compacta o layout vertical, remove excesso de cursos de baixo impacto (limita às 4-5 certificações mais relevantes), agrupa habilidades em formato de tags categorizadas (sem repetir conteúdo da experiência) e prioriza a seção de projetos e portfólio no topo.
 *   **Contratos Empresariais (Contracts)**
 *   **Relatórios Corporativos (Reports)**
 
-### 👁 Visualização Nativa e Biblioteca
+###  Visualização Nativa e Biblioteca
 *   **Biblioteca de Arquivos**: Gerencie seus documentos gerados (baixar ou excluir de forma dinâmica sem necessidade de recarregar a página, com interface SweetAlert2).
 *   **Pré-visualização**: Visualize os PDFs gerados diretamente na página da aplicação web através de um modal integrado, sem precisar fazer o download prévio do arquivo.
 
